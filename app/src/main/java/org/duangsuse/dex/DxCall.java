@@ -27,7 +27,7 @@ class DxCall {
 
     void init() {
         //remove if DX is loaded from Dex
-        Main.version();
+        com.android.dx.command.Main.main(new String[0]);
         File dexFile = new File(mDexPath);
         if (dexFile.isFile())
             loadDex();
