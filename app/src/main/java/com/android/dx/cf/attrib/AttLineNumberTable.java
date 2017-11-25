@@ -23,10 +23,14 @@ import com.android.dx.util.MutabilityException;
  * Attribute class for standard {@code LineNumberTable} attributes.
  */
 public final class AttLineNumberTable extends BaseAttribute {
-    /** {@code non-null;} attribute name for attributes of this type */
+    /**
+     * {@code non-null;} attribute name for attributes of this type
+     */
     public static final String ATTRIBUTE_NAME = "LineNumberTable";
 
-    /** {@code non-null;} list of line number entries */
+    /**
+     * {@code non-null;} list of line number entries
+     */
     private final LineNumberList lineNumbers;
 
     /**
@@ -49,7 +53,9 @@ public final class AttLineNumberTable extends BaseAttribute {
         this.lineNumbers = lineNumbers;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int byteLength() {
         return 8 + 4 * lineNumbers.size();

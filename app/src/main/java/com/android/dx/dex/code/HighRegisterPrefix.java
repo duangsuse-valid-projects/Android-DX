@@ -29,14 +29,16 @@ import com.android.dx.util.AnnotatedOutput;
  * be met using a straightforward choice of a single opcode.
  */
 public final class HighRegisterPrefix extends VariableSizeInsn {
-    /** {@code null-ok;} cached instructions, if constructed */
+    /**
+     * {@code null-ok;} cached instructions, if constructed
+     */
     private SimpleInsn[] insns;
 
     /**
      * Constructs an instance. The output address of this instance is initially
      * unknown ({@code -1}).
      *
-     * @param position {@code non-null;} source position
+     * @param position  {@code non-null;} source position
      * @param registers {@code non-null;} source registers
      */
     public HighRegisterPrefix(SourcePosition position,
@@ -50,7 +52,23 @@ public final class HighRegisterPrefix extends VariableSizeInsn {
         insns = null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Returns the proper move instruction for the given source spec
+     * and destination index.
+     *
+     * @param src       {@code non-null;} the source register spec
+     * @param destIndex {@code >= 0;} the destination register index
+     * @return {@code non-null;} the appropriate move instruction
+     */
+    private static SimpleInsn moveInsnFor(RegisterSpec src, int destIndex) {
+        return DalvInsn.makeMove(SourcePosition.NO_INFO,
+                RegisterSpec.make(destIndex, src.getType()),
+                src);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int codeSize() {
         int result = 0;
@@ -64,7 +82,9 @@ public final class HighRegisterPrefix extends VariableSizeInsn {
         return result;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeTo(AnnotatedOutput out) {
         calculateInsnsIfNecessary();
@@ -89,25 +109,31 @@ public final class HighRegisterPrefix extends VariableSizeInsn {
         insns = new SimpleInsn[sz];
 
         for (int i = 0, outAt = 0; i < sz; i++) {
-          RegisterSpec src = registers.get(i);
-          insns[i] = moveInsnFor(src, outAt);
-          outAt += src.getCategory();
+            RegisterSpec src = registers.get(i);
+            insns[i] = moveInsnFor(src, outAt);
+            outAt += src.getCategory();
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DalvInsn withRegisters(RegisterSpecList registers) {
         return new HighRegisterPrefix(getPosition(), registers);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String argString() {
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String listingString0(boolean noteIndices) {
         RegisterSpecList registers = getRegisters();
@@ -128,19 +154,5 @@ public final class HighRegisterPrefix extends VariableSizeInsn {
         }
 
         return sb.toString();
-    }
-
-    /**
-     * Returns the proper move instruction for the given source spec
-     * and destination index.
-     *
-     * @param src {@code non-null;} the source register spec
-     * @param destIndex {@code >= 0;} the destination register index
-     * @return {@code non-null;} the appropriate move instruction
-     */
-    private static SimpleInsn moveInsnFor(RegisterSpec src, int destIndex) {
-        return DalvInsn.makeMove(SourcePosition.NO_INFO,
-                RegisterSpec.make(destIndex, src.getType()),
-                src);
     }
 }

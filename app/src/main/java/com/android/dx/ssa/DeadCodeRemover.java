@@ -18,21 +18,26 @@ package com.android.dx.ssa;
 
 import com.android.dx.rop.code.RegisterSpec;
 import com.android.dx.rop.code.RegisterSpecList;
+
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashSet;
 
 /**
  * A variation on Appel Algorithm 19.12 "Dead code elimination in SSA form".
- *
+ * <p>
  * TODO this algorithm is more efficient if run in reverse from exit
  * block to entry block.
  */
 public class DeadCodeRemover {
-    /** method we're processing */
+    /**
+     * method we're processing
+     */
     private final SsaMethod ssaMeth;
 
-    /** ssaMeth.getRegCount() */
+    /**
+     * ssaMeth.getRegCount()
+     */
     private final int regCount;
 
     /**
@@ -41,18 +46,10 @@ public class DeadCodeRemover {
      */
     private final BitSet worklist;
 
-    /** use list indexed by register; modified during operation */
-    private final ArrayList<SsaInsn>[] useList;
-
     /**
-     * Process a method with the dead-code remver
-     *
-     * @param ssaMethod method to process
+     * use list indexed by register; modified during operation
      */
-    public static void process(SsaMethod ssaMethod) {
-        DeadCodeRemover dc = new DeadCodeRemover(ssaMethod);
-        dc.run();
-    }
+    private final ArrayList<SsaInsn>[] useList;
 
     /**
      * Constructs an instance.
@@ -68,6 +65,34 @@ public class DeadCodeRemover {
     }
 
     /**
+     * Process a method with the dead-code remver
+     *
+     * @param ssaMethod method to process
+     */
+    public static void process(SsaMethod ssaMethod) {
+        DeadCodeRemover dc = new DeadCodeRemover(ssaMethod);
+        dc.run();
+    }
+
+    /**
+     * Returns true if this insn has a side-effect. Returns true
+     * if the insn is null for reasons stated in the code block.
+     *
+     * @param insn {@code null-ok;} instruction in question
+     * @return true if it has a side-effect
+     */
+    private static boolean hasSideEffect(SsaInsn insn) {
+        if (insn == null) {
+            /* While false would seem to make more sense here, true
+             * prevents us from adding this back to a worklist unnecessarally.
+             */
+            return true;
+        }
+
+        return insn.hasSideEffect();
+    }
+
+    /**
      * Runs the dead code remover.
      */
     private void run() {
@@ -79,7 +104,7 @@ public class DeadCodeRemover {
 
         int regV;
 
-        while ( 0 <= (regV = worklist.nextSetBit(0)) ) {
+        while (0 <= (regV = worklist.nextSetBit(0))) {
             worklist.clear(regV);
 
             if (useList[regV].size() == 0
@@ -170,9 +195,9 @@ public class DeadCodeRemover {
      * operations with no side effects.
      *
      * @param regV register to examine
-     * @param set a set of registers that we've already determined
-     * are only used as sources in operations with no side effect or null
-     * if this is the first recursion
+     * @param set  a set of registers that we've already determined
+     *             are only used as sources in operations with no side effect or null
+     *             if this is the first recursion
      * @return true if usage is circular without side effect
      */
     private boolean isCircularNoSideEffect(int regV, BitSet set) {
@@ -206,24 +231,6 @@ public class DeadCodeRemover {
     }
 
     /**
-     * Returns true if this insn has a side-effect. Returns true
-     * if the insn is null for reasons stated in the code block.
-     *
-     * @param insn {@code null-ok;} instruction in question
-     * @return true if it has a side-effect
-     */
-    private static boolean hasSideEffect(SsaInsn insn) {
-        if (insn == null) {
-            /* While false would seem to make more sense here, true
-             * prevents us from adding this back to a worklist unnecessarally.
-             */
-            return true;
-        }
-
-        return insn.hasSideEffect();
-    }
-
-    /**
      * A callback class used to build up the initial worklist of
      * registers defined by an instruction with no side effect.
      */
@@ -235,33 +242,39 @@ public class DeadCodeRemover {
          * ssaMeth.forEachInsn() is called with this instance.
          *
          * @param noSideEffectRegs to-build bitset of regs that are
-         * results of regs with no side effects
+         *                         results of regs with no side effects
          */
         public NoSideEffectVisitor(BitSet noSideEffectRegs) {
             this.noSideEffectRegs = noSideEffectRegs;
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         @Override
-        public void visitMoveInsn (NormalSsaInsn insn) {
+        public void visitMoveInsn(NormalSsaInsn insn) {
             // If we're tracking local vars, some moves have side effects.
             if (!hasSideEffect(insn)) {
                 noSideEffectRegs.set(insn.getResult().getReg());
             }
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         @Override
-        public void visitPhiInsn (PhiInsn phi) {
+        public void visitPhiInsn(PhiInsn phi) {
             // If we're tracking local vars, then some phis have side effects.
             if (!hasSideEffect(phi)) {
                 noSideEffectRegs.set(phi.getResult().getReg());
             }
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         @Override
-        public void visitNonMoveInsn (NormalSsaInsn insn) {
+        public void visitNonMoveInsn(NormalSsaInsn insn) {
             RegisterSpec result = insn.getResult();
             if (!hasSideEffect(insn) && result != null) {
                 noSideEffectRegs.set(result.getReg());

@@ -23,6 +23,7 @@ import com.android.dx.ssa.RegisterMapper;
 import com.android.dx.util.AnnotatedOutput;
 import com.android.dx.util.Hex;
 import com.android.dx.util.TwoColumnOutput;
+
 import java.util.BitSet;
 
 /**
@@ -30,66 +31,38 @@ import java.util.BitSet;
  */
 public abstract class DalvInsn {
     /**
+     * the opcode; one of the constants from {@link Dops}
+     */
+    private final Dop opcode;
+    /**
+     * {@code non-null;} source position
+     */
+    private final SourcePosition position;
+    /**
+     * {@code non-null;} list of register arguments
+     */
+    private final RegisterSpecList registers;
+    /**
      * the actual output address of this instance, if known, or
      * {@code -1} if not
      */
     private int address;
 
-    /** the opcode; one of the constants from {@link Dops} */
-    private final Dop opcode;
-
-    /** {@code non-null;} source position */
-    private final SourcePosition position;
-
-    /** {@code non-null;} list of register arguments */
-    private final RegisterSpecList registers;
-
-    /**
-     * Makes a move instruction, appropriate and ideal for the given arguments.
-     *
-     * @param position {@code non-null;} source position information
-     * @param dest {@code non-null;} destination register
-     * @param src {@code non-null;} source register
-     * @return {@code non-null;} an appropriately-constructed instance
-     */
-    public static SimpleInsn makeMove(SourcePosition position,
-            RegisterSpec dest, RegisterSpec src) {
-        boolean category1 = dest.getCategory() == 1;
-        boolean reference = dest.getType().isReference();
-        int destReg = dest.getReg();
-        int srcReg = src.getReg();
-        Dop opcode;
-
-        if ((srcReg | destReg) < 16) {
-            opcode = reference ? Dops.MOVE_OBJECT :
-                (category1 ? Dops.MOVE : Dops.MOVE_WIDE);
-        } else if (destReg < 256) {
-            opcode = reference ? Dops.MOVE_OBJECT_FROM16 :
-                (category1 ? Dops.MOVE_FROM16 : Dops.MOVE_WIDE_FROM16);
-        } else {
-            opcode = reference ? Dops.MOVE_OBJECT_16 :
-                (category1 ? Dops.MOVE_16 : Dops.MOVE_WIDE_16);
-        }
-
-        return new SimpleInsn(opcode, position,
-                              RegisterSpecList.make(dest, src));
-    }
-
     /**
      * Constructs an instance. The output address of this instance is initially
      * unknown ({@code -1}).
-     *
+     * <p>
      * <p><b>Note:</b> In the unlikely event that an instruction takes
      * absolutely no registers (e.g., a {@code nop} or a
      * no-argument no-result static method call), then the given
      * register list may be passed as {@link
      * RegisterSpecList#EMPTY}.</p>
      *
-     * @param opcode the opcode; one of the constants from {@link Dops}
-     * @param position {@code non-null;} source position
+     * @param opcode    the opcode; one of the constants from {@link Dops}
+     * @param position  {@code non-null;} source position
      * @param registers {@code non-null;} register list, including a
-     * result register if appropriate (that is, registers may be either
-     * ins and outs)
+     *                  result register if appropriate (that is, registers may be either
+     *                  ins and outs)
      */
     public DalvInsn(Dop opcode, SourcePosition position,
                     RegisterSpecList registers) {
@@ -111,7 +84,40 @@ public abstract class DalvInsn {
         this.registers = registers;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Makes a move instruction, appropriate and ideal for the given arguments.
+     *
+     * @param position {@code non-null;} source position information
+     * @param dest     {@code non-null;} destination register
+     * @param src      {@code non-null;} source register
+     * @return {@code non-null;} an appropriately-constructed instance
+     */
+    public static SimpleInsn makeMove(SourcePosition position,
+                                      RegisterSpec dest, RegisterSpec src) {
+        boolean category1 = dest.getCategory() == 1;
+        boolean reference = dest.getType().isReference();
+        int destReg = dest.getReg();
+        int srcReg = src.getReg();
+        Dop opcode;
+
+        if ((srcReg | destReg) < 16) {
+            opcode = reference ? Dops.MOVE_OBJECT :
+                    (category1 ? Dops.MOVE : Dops.MOVE_WIDE);
+        } else if (destReg < 256) {
+            opcode = reference ? Dops.MOVE_OBJECT_FROM16 :
+                    (category1 ? Dops.MOVE_FROM16 : Dops.MOVE_WIDE_FROM16);
+        } else {
+            opcode = reference ? Dops.MOVE_OBJECT_16 :
+                    (category1 ? Dops.MOVE_16 : Dops.MOVE_WIDE_16);
+        }
+
+        return new SimpleInsn(opcode, position,
+                RegisterSpecList.make(dest, src));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder(100);
@@ -155,9 +161,8 @@ public abstract class DalvInsn {
      * Gets the output address of this instruction, if it is known. This throws
      * a {@code RuntimeException} if it has not yet been set.
      *
-     * @see #setAddress
-     *
      * @return {@code >= 0;} the output address
+     * @see #setAddress
      */
     public final int getAddress() {
         if (address < 0) {
@@ -165,6 +170,19 @@ public abstract class DalvInsn {
         }
 
         return address;
+    }
+
+    /**
+     * Sets the output address.
+     *
+     * @param address {@code address >= 0;} the output address
+     */
+    public final void setAddress(int address) {
+        if (address < 0) {
+            throw new IllegalArgumentException("address < 0");
+        }
+
+        this.address = address;
     }
 
     /**
@@ -245,7 +263,7 @@ public abstract class DalvInsn {
      */
     public DalvInsn getLowRegVersion() {
         RegisterSpecList regs =
-            registers.withExpandedRegisters(0, hasResult(), null);
+                registers.withExpandedRegisters(0, hasResult(), null);
         return withRegisters(regs);
     }
 
@@ -254,10 +272,9 @@ public abstract class DalvInsn {
      * version of this instance. Will not generate moves for registers
      * marked compatible to the format by the given BitSet.
      *
-     * @see #expandedVersion
-     *
      * @param compatRegs {@code non-null;} set of compatible registers
      * @return {@code null-ok;} the prefix, if any
+     * @see #expandedVersion
      */
     public DalvInsn expandedPrefix(BitSet compatRegs) {
         RegisterSpecList regs = registers;
@@ -279,10 +296,9 @@ public abstract class DalvInsn {
      * version of this instance. Will not generate a move for a register
      * marked compatible to the format by the given BitSet.
      *
-     * @see #expandedVersion
-     *
      * @param compatRegs {@code non-null;} set of compatible registers
      * @return {@code null-ok;} the suffix, if any
+     * @see #expandedVersion
      */
     public DalvInsn expandedSuffix(BitSet compatRegs) {
         if (hasResult() && !compatRegs.get(0)) {
@@ -309,7 +325,7 @@ public abstract class DalvInsn {
      */
     public DalvInsn expandedVersion(BitSet compatRegs) {
         RegisterSpecList regs =
-            registers.withExpandedRegisters(0, hasResult(), compatRegs);
+                registers.withExpandedRegisters(0, hasResult(), compatRegs);
         return withRegisters(regs);
     }
 
@@ -332,17 +348,17 @@ public abstract class DalvInsn {
      * a human-oriented listing dump. This method will return {@code null}
      * if this instance should not appear in a listing.
      *
-     * @param prefix {@code non-null;} prefix before the address; each follow-on
-     * line will be indented to match as well
-     * @param width {@code width >= 0;} the width of the output or {@code 0} for
-     * unlimited width
+     * @param prefix      {@code non-null;} prefix before the address; each follow-on
+     *                    line will be indented to match as well
+     * @param width       {@code width >= 0;} the width of the output or {@code 0} for
+     *                    unlimited width
      * @param noteIndices whether to include an explicit notation of
-     * constant pool indices
+     *                    constant pool indices
      * @return {@code null-ok;} the string form or {@code null} if this
      * instance should not appear in a listing
      */
     public final String listingString(String prefix, int width,
-            boolean noteIndices) {
+                                      boolean noteIndices) {
         String insnPerSe = listingString0(noteIndices);
 
         if (insnPerSe == null) {
@@ -354,19 +370,6 @@ public abstract class DalvInsn {
         int w2 = (width == 0) ? insnPerSe.length() : (width - w1);
 
         return TwoColumnOutput.toString(addr, w1, "", insnPerSe, w2);
-    }
-
-    /**
-     * Sets the output address.
-     *
-     * @param address {@code address >= 0;} the output address
-     */
-    public final void setAddress(int address) {
-        if (address < 0) {
-            throw new IllegalArgumentException("address < 0");
-        }
-
-        this.address = address;
     }
 
     /**
@@ -389,7 +392,7 @@ public abstract class DalvInsn {
      * @return {@code non-null;} an appropriately-constructed instance
      */
     public DalvInsn withMapper(RegisterMapper mapper) {
-      return withRegisters(mapper.map(getRegisters()));
+        return withRegisters(mapper.map(getRegisters()));
     }
 
     /**
@@ -454,7 +457,7 @@ public abstract class DalvInsn {
      * not appear in a listing.
      *
      * @param noteIndices whether to include an explicit notation of
-     * constant pool indices
+     *                    constant pool indices
      * @return {@code null-ok;} the listing string
      */
     protected abstract String listingString0(boolean noteIndices);
@@ -462,7 +465,7 @@ public abstract class DalvInsn {
     /**
      * Helper which returns the string form of the associated constants
      * for inclusion in a human oriented listing dump.
-     *
+     * <p>
      * This method is only implemented for instructions with one or more
      * constants.
      *
@@ -475,7 +478,7 @@ public abstract class DalvInsn {
     /**
      * Helper which returns the comment form of the associated constants
      * for inclusion in a human oriented listing dump.
-     *
+     * <p>
      * This method is only implemented for instructions with one or more
      * constants.
      *

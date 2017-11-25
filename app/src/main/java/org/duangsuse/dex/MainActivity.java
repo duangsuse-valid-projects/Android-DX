@@ -20,6 +20,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dx.command.Main;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -32,7 +34,6 @@ public class MainActivity extends Activity {
 
     ConsoleOutputCapturer cout_cap;
     TextView background_text;
-    DxCall mDxCall;
 
     private static View createStatusView(Activity activity, int color) {
         int resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -53,10 +54,8 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
         cout_cap = new ConsoleOutputCapturer();
         cout_cap.start(background_text);
-        mDxCall = new DxCall(this);
         String[] args = {"--help"};
-        mDxCall.init();
-        mDxCall.exec(args);
+
         background_text = findViewById(R.id.tv);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -72,7 +71,6 @@ public class MainActivity extends Activity {
         rooView.setClipToPadding(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             getActionBar().setIcon(new ColorDrawable(Color.argb(0, 0, 0, 0)));
-            getActionBar().setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP);
         }
     }
 
@@ -105,7 +103,7 @@ public class MainActivity extends Activity {
                             .setView(input)
                             .setOnDismissListener(i -> {
                                 String[] args = input.getText().toString().split(" ");
-                                mDxCall.exec(args);
+                                invokeMain(args);
                             }).show();
                 }
                 break;
@@ -131,7 +129,7 @@ public class MainActivity extends Activity {
                     }
                     Toast.makeText(this, filePath, Toast.LENGTH_LONG).show();
                     String[] args = {"--verbose", "--dex", "--output=" + filePath + ".dex", filePath};
-                    mDxCall.exec(args);
+                    invokeMain(args);
                 }
             }
         }
@@ -140,6 +138,13 @@ public class MainActivity extends Activity {
     void updateText() {
         background_text.setText(cout_cap.stop());
         cout_cap.start(background_text);
+    }
+    void invokeMain(String[] args) {
+        try {
+            Main.main(args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
 

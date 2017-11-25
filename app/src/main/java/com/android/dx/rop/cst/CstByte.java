@@ -24,8 +24,19 @@ import com.android.dx.util.Hex;
  */
 public final class CstByte
         extends CstLiteral32 {
-    /** {@code non-null;} the value {@code 0} as an instance of this class */
+    /**
+     * {@code non-null;} the value {@code 0} as an instance of this class
+     */
     public static final CstByte VALUE_0 = make((byte) 0);
+
+    /**
+     * Constructs an instance. This constructor is private; use {@link #make}.
+     *
+     * @param value the {@code byte} value
+     */
+    private CstByte(byte value) {
+        super(value);
+    }
 
     /**
      * Makes an instance for the given value. This may (but does not
@@ -57,34 +68,33 @@ public final class CstByte
     }
 
     /**
-     * Constructs an instance. This constructor is private; use {@link #make}.
-     *
-     * @param value the {@code byte} value
+     * {@inheritDoc}
      */
-    private CstByte(byte value) {
-        super(value);
-    }
-
-    /** {@inheritDoc} */
     @Override
     public String toString() {
         int value = getIntBits();
         return "byte{0x" + Hex.u1(value) + " / " + value + '}';
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Type getType() {
         return Type.BYTE;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "byte";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toHuman() {
         return Integer.toString(getIntBits());

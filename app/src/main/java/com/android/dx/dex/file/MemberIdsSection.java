@@ -18,6 +18,7 @@ package com.android.dx.dex.file;
 
 import com.android.dex.DexFormat;
 import com.android.dex.DexIndexOverflowException;
+
 import java.util.Formatter;
 import java.util.Map;
 import java.util.TreeMap;
@@ -32,14 +33,16 @@ public abstract class MemberIdsSection extends UniformItemSection {
      * Constructs an instance. The file offset is initially unknown.
      *
      * @param name {@code null-ok;} the name of this instance, for annotation
-     * purposes
+     *             purposes
      * @param file {@code non-null;} file that this instance is part of
      */
     public MemberIdsSection(String name, DexFile file) {
         super(name, file, 4);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void orderItems() {
         int idx = 0;
@@ -72,7 +75,7 @@ public abstract class MemberIdsSection extends UniformItemSection {
             formatter.format("Too many %1$s references to fit in one dex file: %2$d; max is %3$d.%n" +
                             "You may try using multi-dex. If multi-dex is enabled then the list of " +
                             "classes for the main dex list is too large.%n" +
-                    "References by package:",
+                            "References by package:",
                     memberType, items().size(), DexFormat.MAX_MEMBER_IDX + 1);
             for (Map.Entry<String, AtomicInteger> entry : membersByPackage.entrySet()) {
                 formatter.format("%n%6d %s", entry.getValue().get(), entry.getKey());

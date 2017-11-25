@@ -11,6 +11,8 @@
         android:ellipsize="marquee"
         android:hint="@string/output_here"
         android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingStart="5dp"
         android:text="@string/code"
         android:textAlignment="inherit"
         android:textAppearance="?android:attr/textAppearanceMedium"
@@ -19,8 +21,7 @@
         android:textIsSelectable="true"
         android:textSize="12sp"
         android:textStyle="normal"
-        android:typeface="monospace"
-        android:paddingStart="5dp" />
+        android:typeface="monospace" />
 
 </LinearLayout>
 

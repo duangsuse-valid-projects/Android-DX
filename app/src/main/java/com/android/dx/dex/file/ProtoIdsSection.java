@@ -21,6 +21,7 @@ import com.android.dx.rop.cst.CstProtoRef;
 import com.android.dx.rop.type.Prototype;
 import com.android.dx.util.AnnotatedOutput;
 import com.android.dx.util.Hex;
+
 import java.util.Collection;
 import java.util.TreeMap;
 
@@ -45,13 +46,17 @@ public final class ProtoIdsSection extends UniformItemSection {
         protoIds = new TreeMap<Prototype, ProtoIdItem>();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<? extends Item> items() {
         return protoIds.values();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IndexedItem get(Constant cst) {
         if (cst == null) {
@@ -142,7 +147,9 @@ public final class ProtoIdsSection extends UniformItemSection {
         return item.getIndex();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void orderItems() {
         int idx = 0;

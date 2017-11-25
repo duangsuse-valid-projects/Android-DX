@@ -28,7 +28,9 @@ import com.android.dx.util.Hex;
 public final class MultiCstInsn extends FixedSizeInsn {
     private static final int NOT_SET = -1;
 
-    /** {@code non-null;} the constant argument for this instruction */
+    /**
+     * {@code non-null;} the constant argument for this instruction
+     */
     private final Constant[] constants;
 
     /**
@@ -47,11 +49,11 @@ public final class MultiCstInsn extends FixedSizeInsn {
      * Constructs an instance. The output address of this instance is
      * initially unknown ({@code -1}) as is the constant pool index.
      *
-     * @param opcode the opcode; one of the constants from {@link Dops}
-     * @param position {@code non-null;} source position
+     * @param opcode    the opcode; one of the constants from {@link Dops}
+     * @param position  {@code non-null;} source position
      * @param registers {@code non-null;} register list, including a
-     * result register if appropriate (that is, registers may be either
-     * ins or outs)
+     *                  result register if appropriate (that is, registers may be either
+     *                  ins or outs)
      * @param constants {@code non-null;} constants argument
      */
     public MultiCstInsn(Dop opcode, SourcePosition position,
@@ -74,22 +76,26 @@ public final class MultiCstInsn extends FixedSizeInsn {
     }
 
     private MultiCstInsn(Dop opcode, SourcePosition position,
-            RegisterSpecList registers, Constant[] constants, int[] index,
-            int classIndex) {
+                         RegisterSpecList registers, Constant[] constants, int[] index,
+                         int classIndex) {
         super(opcode, position, registers);
         this.constants = constants;
         this.index = index;
         this.classIndex = classIndex;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DalvInsn withOpcode(Dop opcode) {
         return new MultiCstInsn(opcode, getPosition(), getRegisters(),
                 this.constants, this.index, this.classIndex);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DalvInsn withRegisters(RegisterSpecList registers) {
         return new MultiCstInsn(getOpcode(), getPosition(), registers,
@@ -98,6 +104,7 @@ public final class MultiCstInsn extends FixedSizeInsn {
 
     /**
      * Gets the number of constants associated with instruction.
+     *
      * @return the number of constants.
      */
     public int getNumberOfConstants() {
@@ -124,7 +131,7 @@ public final class MultiCstInsn extends FixedSizeInsn {
     public int getIndex(int position) {
         if (!hasIndex(position)) {
             throw new IllegalStateException("index not yet set for constant "
-                + position + " value = " + constants[position]);
+                    + position + " value = " + constants[position]);
         }
 
         return index[position];
@@ -134,9 +141,8 @@ public final class MultiCstInsn extends FixedSizeInsn {
      * Returns whether the DEX index of a constant has been set.
      *
      * @param position the position of the constant to test.
-     * @see #setIndex
-     *
      * @return {@code true} if the index has been set
+     * @see #setIndex
      */
     public boolean hasIndex(int position) {
         return (index[position] != NOT_SET);
@@ -147,7 +153,7 @@ public final class MultiCstInsn extends FixedSizeInsn {
      * once per instance.
      *
      * @param position the position of the constant to set.
-     * @param index {@code index >= 0;} the constant pool index
+     * @param index    {@code index >= 0;} the constant pool index
      */
     public void setIndex(int position, int index) {
         if (index < 0) {
@@ -178,18 +184,6 @@ public final class MultiCstInsn extends FixedSizeInsn {
     }
 
     /**
-     * Returns whether the class index associated with this instruction has
-     * been set.
-     *
-     * @see #setClassIndex
-     *
-     * @return {@code true} if the index has been set, false otherwise
-     */
-    public boolean hasClassIndex() {
-        return (classIndex != NOT_SET);
-    }
-
-    /**
      * Sets the class index associated with this instruction. This is the
      * constant pool index for the class referred to by this instruction. Only
      * reference constants have a class, so it is only on instances
@@ -210,7 +204,20 @@ public final class MultiCstInsn extends FixedSizeInsn {
         this.classIndex = index;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Returns whether the class index associated with this instruction has
+     * been set.
+     *
+     * @return {@code true} if the index has been set, false otherwise
+     * @see #setClassIndex
+     */
+    public boolean hasClassIndex() {
+        return (classIndex != NOT_SET);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String argString() {
         StringBuilder sb = new StringBuilder();
@@ -221,13 +228,17 @@ public final class MultiCstInsn extends FixedSizeInsn {
         return sb.toString();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String cstString() {
         return argString();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String cstComment() {
         StringBuilder sb = new StringBuilder();

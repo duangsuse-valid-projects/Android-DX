@@ -24,18 +24,24 @@ import java.util.Arrays;
 /**
  * Wrapper for a {@code byte[]}, which provides read-only access and
  * can "reveal" a partial slice of the underlying array.
- *
+ * <p>
  * <b>Note:</b> Multibyte accessors all use big-endian order.
  */
 public final class ByteArray {
-    /** {@code non-null;} underlying array */
+    /**
+     * {@code non-null;} underlying array
+     */
     private final byte[] bytes;
 
-    /** {@code >= 0}; start index of the slice (inclusive) */
+    /**
+     * {@code >= 0}; start index of the slice (inclusive)
+     */
     private final int start;
 
-    /** {@code >= 0, <= bytes.length}; size computed as
-     * {@code end - start} (in the constructor) */
+    /**
+     * {@code >= 0, <= bytes.length}; size computed as
+     * {@code end - start} (in the constructor)
+     */
     private final int size;
 
     /**
@@ -43,8 +49,8 @@ public final class ByteArray {
      *
      * @param bytes {@code non-null;} the underlying array
      * @param start {@code >= 0;} start index of the slice (inclusive)
-     * @param end {@code >= start, <= bytes.length;} end index of
-     * the slice (exclusive)
+     * @param end   {@code >= start, <= bytes.length;} end index of
+     *              the slice (exclusive)
      */
     public ByteArray(byte[] bytes, int start, int end) {
         if (bytes == null) {
@@ -90,8 +96,8 @@ public final class ByteArray {
      * Returns a slice (that is, a sub-array) of this instance.
      *
      * @param start {@code >= 0;} start index of the slice (inclusive)
-     * @param end {@code >= start, <= size();} end index of
-     * the slice (exclusive)
+     * @param end   {@code >= start, <= size();} end index of
+     *              the slice (exclusive)
      * @return {@code non-null;} the slice
      */
     public ByteArray slice(int start, int end) {
@@ -107,7 +113,7 @@ public final class ByteArray {
      * @param offset offset into this instance
      * @return corresponding offset into {@code bytes}
      * @throws IllegalArgumentException thrown if {@code bytes} is
-     * not the underlying array of this instance
+     *                                  not the underlying array of this instance
      */
     public int underlyingOffset(int offset) {
         return start + offset;
@@ -144,9 +150,9 @@ public final class ByteArray {
     public int getInt(int off) {
         checkOffsets(off, off + 4);
         return (getByte0(off) << 24) |
-            (getUnsignedByte0(off + 1) << 16) |
-            (getUnsignedByte0(off + 2) << 8) |
-            getUnsignedByte0(off + 3);
+                (getUnsignedByte0(off + 1) << 16) |
+                (getUnsignedByte0(off + 2) << 8) |
+                getUnsignedByte0(off + 3);
     }
 
     /**
@@ -158,13 +164,13 @@ public final class ByteArray {
     public long getLong(int off) {
         checkOffsets(off, off + 8);
         int part1 = (getByte0(off) << 24) |
-            (getUnsignedByte0(off + 1) << 16) |
-            (getUnsignedByte0(off + 2) << 8) |
-            getUnsignedByte0(off + 3);
+                (getUnsignedByte0(off + 1) << 16) |
+                (getUnsignedByte0(off + 2) << 8) |
+                getUnsignedByte0(off + 3);
         int part2 = (getByte0(off + 4) << 24) |
-            (getUnsignedByte0(off + 5) << 16) |
-            (getUnsignedByte0(off + 6) << 8) |
-            getUnsignedByte0(off + 7);
+                (getUnsignedByte0(off + 5) << 16) |
+                (getUnsignedByte0(off + 6) << 8) |
+                getUnsignedByte0(off + 7);
 
         return (part2 & 0xffffffffL) | ((long) part1) << 32;
     }
@@ -196,14 +202,14 @@ public final class ByteArray {
      * {@code byte[]} at the given offset. The given array must be
      * large enough.
      *
-     * @param out {@code non-null;} array to hold the output
+     * @param out    {@code non-null;} array to hold the output
      * @param offset {@code non-null;} index into {@code out} for the first
-     * byte of output
+     *               byte of output
      */
     public void getBytes(byte[] out, int offset) {
         if ((out.length - offset) < size) {
             throw new IndexOutOfBoundsException("(out.length - offset) < " +
-                                                "size()");
+                    "size()");
         }
 
         System.arraycopy(bytes, start, out, offset, size);
@@ -218,7 +224,7 @@ public final class ByteArray {
     private void checkOffsets(int s, int e) {
         if ((s < 0) || (e < s) || (e > size)) {
             throw new IllegalArgumentException("bad range: " + s + ".." + e +
-                                               "; actual size " + size);
+                    "; actual size " + size);
         }
     }
 
@@ -283,14 +289,36 @@ public final class ByteArray {
     }
 
     /**
+     * Helper class for {@link #makeDataInputStream}. This is used
+     * simply so that the cursor of a wrapped {@link MyInputStream}
+     * instance may be easily determined.
+     */
+    public static class MyDataInputStream extends DataInputStream {
+        /**
+         * {@code non-null;} the underlying {@link MyInputStream}
+         */
+        private final MyInputStream wrapped;
+
+        public MyDataInputStream(MyInputStream wrapped) {
+            super(wrapped);
+
+            this.wrapped = wrapped;
+        }
+    }
+
+    /**
      * Helper class for {@link #makeInputStream}, which implements the
      * stream functionality.
      */
     public class MyInputStream extends InputStream {
-        /** 0..size; the cursor */
+        /**
+         * 0..size; the cursor
+         */
         private int cursor;
 
-        /** 0..size; the mark */
+        /**
+         * 0..size; the mark
+         */
         private int mark;
 
         public MyInputStream() {
@@ -343,22 +371,6 @@ public final class ByteArray {
         @Override
         public boolean markSupported() {
             return true;
-        }
-    }
-
-    /**
-     * Helper class for {@link #makeDataInputStream}. This is used
-     * simply so that the cursor of a wrapped {@link MyInputStream}
-     * instance may be easily determined.
-     */
-    public static class MyDataInputStream extends DataInputStream {
-        /** {@code non-null;} the underlying {@link MyInputStream} */
-        private final MyInputStream wrapped;
-
-        public MyDataInputStream(MyInputStream wrapped) {
-            super(wrapped);
-
-            this.wrapped = wrapped;
         }
     }
 }

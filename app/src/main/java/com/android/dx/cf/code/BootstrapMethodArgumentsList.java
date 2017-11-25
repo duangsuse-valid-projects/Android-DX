@@ -53,19 +53,19 @@ public class BootstrapMethodArgumentsList extends FixedSizeList {
     /**
      * Sets the bootstrap argument at the indicated position.
      *
-     * @param n position of argument to set
+     * @param n   position of argument to set
      * @param cst {@code Constant} instance
      */
     public void set(int n, Constant cst) {
         // The set of permitted types is defined by the JVMS 8, section 4.7.23.
         if (cst instanceof CstString ||
-            cst instanceof CstType ||
-            cst instanceof CstInteger ||
-            cst instanceof CstLong ||
-            cst instanceof CstFloat ||
-            cst instanceof CstDouble ||
-            cst instanceof CstMethodHandle ||
-            cst instanceof CstProtoRef) {
+                cst instanceof CstType ||
+                cst instanceof CstInteger ||
+                cst instanceof CstLong ||
+                cst instanceof CstFloat ||
+                cst instanceof CstDouble ||
+                cst instanceof CstMethodHandle ||
+                cst instanceof CstProtoRef) {
             set0(n, cst);
         } else {
             Class<?> klass = cst.getClass();

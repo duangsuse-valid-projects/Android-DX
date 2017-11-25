@@ -28,62 +28,43 @@ import java.io.Writer;
  * one which goes on the right.
  */
 public final class TwoColumnOutput {
-    /** {@code non-null;} underlying writer for final output */
+    /**
+     * {@code non-null;} underlying writer for final output
+     */
     private final Writer out;
 
-    /** {@code > 0;} the left column width */
+    /**
+     * {@code > 0;} the left column width
+     */
     private final int leftWidth;
 
-    /** {@code non-null;} pending left column output */
+    /**
+     * {@code non-null;} pending left column output
+     */
     private final StringBuffer leftBuf;
 
-    /** {@code non-null;} pending right column output */
+    /**
+     * {@code non-null;} pending right column output
+     */
     private final StringBuffer rightBuf;
 
-    /** {@code non-null;} left column writer */
+    /**
+     * {@code non-null;} left column writer
+     */
     private final IndentingWriter leftColumn;
 
-    /** {@code non-null;} right column writer */
-    private final IndentingWriter rightColumn;
-
     /**
-     * Turns the given two strings (with widths) and spacer into a formatted
-     * two-column string.
-     *
-     * @param s1 {@code non-null;} first string
-     * @param width1 {@code > 0;} width of the first column
-     * @param spacer {@code non-null;} spacer string
-     * @param s2 {@code non-null;} second string
-     * @param width2 {@code > 0;} width of the second column
-     * @return {@code non-null;} an appropriately-formatted string
+     * {@code non-null;} right column writer
      */
-    public static String toString(String s1, int width1, String spacer,
-                                  String s2, int width2) {
-        int len1 = s1.length();
-        int len2 = s2.length();
-
-        StringWriter sw = new StringWriter((len1 + len2) * 3);
-        TwoColumnOutput twoOut =
-            new TwoColumnOutput(sw, width1, width2, spacer);
-
-        try {
-            twoOut.getLeft().write(s1);
-            twoOut.getRight().write(s2);
-        } catch (IOException ex) {
-            throw new RuntimeException("shouldn't happen", ex);
-        }
-
-        twoOut.flush();
-        return sw.toString();
-    }
+    private final IndentingWriter rightColumn;
 
     /**
      * Constructs an instance.
      *
-     * @param out {@code non-null;} writer to send final output to
-     * @param leftWidth {@code > 0;} width of the left column, in characters
+     * @param out        {@code non-null;} writer to send final output to
+     * @param leftWidth  {@code > 0;} width of the left column, in characters
      * @param rightWidth {@code > 0;} width of the right column, in characters
-     * @param spacer {@code non-null;} spacer string to sit between the two columns
+     * @param spacer     {@code non-null;} spacer string to sit between the two columns
      */
     public TwoColumnOutput(Writer out, int leftWidth, int rightWidth,
                            String spacer) {
@@ -112,20 +93,81 @@ public final class TwoColumnOutput {
         this.rightBuf = rightWriter.getBuffer();
         this.leftColumn = new IndentingWriter(leftWriter, leftWidth);
         this.rightColumn =
-            new IndentingWriter(rightWriter, rightWidth, spacer);
+                new IndentingWriter(rightWriter, rightWidth, spacer);
     }
 
     /**
      * Constructs an instance.
      *
-     * @param out {@code non-null;} stream to send final output to
-     * @param leftWidth {@code >= 1;} width of the left column, in characters
+     * @param out        {@code non-null;} stream to send final output to
+     * @param leftWidth  {@code >= 1;} width of the left column, in characters
      * @param rightWidth {@code >= 1;} width of the right column, in characters
-     * @param spacer {@code non-null;} spacer string to sit between the two columns
+     * @param spacer     {@code non-null;} spacer string to sit between the two columns
      */
     public TwoColumnOutput(OutputStream out, int leftWidth, int rightWidth,
                            String spacer) {
         this(new OutputStreamWriter(out), leftWidth, rightWidth, spacer);
+    }
+
+    /**
+     * Turns the given two strings (with widths) and spacer into a formatted
+     * two-column string.
+     *
+     * @param s1     {@code non-null;} first string
+     * @param width1 {@code > 0;} width of the first column
+     * @param spacer {@code non-null;} spacer string
+     * @param s2     {@code non-null;} second string
+     * @param width2 {@code > 0;} width of the second column
+     * @return {@code non-null;} an appropriately-formatted string
+     */
+    public static String toString(String s1, int width1, String spacer,
+                                  String s2, int width2) {
+        int len1 = s1.length();
+        int len2 = s2.length();
+
+        StringWriter sw = new StringWriter((len1 + len2) * 3);
+        TwoColumnOutput twoOut =
+                new TwoColumnOutput(sw, width1, width2, spacer);
+
+        try {
+            twoOut.getLeft().write(s1);
+            twoOut.getRight().write(s2);
+        } catch (IOException ex) {
+            throw new RuntimeException("shouldn't happen", ex);
+        }
+
+        twoOut.flush();
+        return sw.toString();
+    }
+
+    /**
+     * Appends a newline to the given buffer via the given writer, but
+     * only if it isn't empty and doesn't already end with one.
+     *
+     * @param buf {@code non-null;} the buffer in question
+     * @param out {@code non-null;} the writer to use
+     */
+    private static void appendNewlineIfNecessary(StringBuffer buf,
+                                                 Writer out)
+            throws IOException {
+        int len = buf.length();
+
+        if ((len != 0) && (buf.charAt(len - 1) != '\n')) {
+            out.write('\n');
+        }
+    }
+
+    /**
+     * Writes the given number of spaces to the given writer.
+     *
+     * @param out {@code non-null;} where to write
+     * @param amt {@code >= 0;} the number of spaces to write
+     */
+    private static void writeSpaces(Writer out, int amt) throws IOException {
+        while (amt > 0) {
+            out.write(' ');
+            amt--;
+        }
     }
 
     /**
@@ -169,7 +211,7 @@ public final class TwoColumnOutput {
      * least one of the two column buffers is empty.
      */
     private void outputFullLines() throws IOException {
-        for (;;) {
+        for (; ; ) {
             int leftLen = leftBuf.indexOf("\n");
             if (leftLen < 0) {
                 return;
@@ -219,36 +261,6 @@ public final class TwoColumnOutput {
         while (rightBuf.length() != 0) {
             leftColumn.write('\n');
             outputFullLines();
-        }
-    }
-
-    /**
-     * Appends a newline to the given buffer via the given writer, but
-     * only if it isn't empty and doesn't already end with one.
-     *
-     * @param buf {@code non-null;} the buffer in question
-     * @param out {@code non-null;} the writer to use
-     */
-    private static void appendNewlineIfNecessary(StringBuffer buf,
-                                                 Writer out)
-            throws IOException {
-        int len = buf.length();
-
-        if ((len != 0) && (buf.charAt(len - 1) != '\n')) {
-            out.write('\n');
-        }
-    }
-
-    /**
-     * Writes the given number of spaces to the given writer.
-     *
-     * @param out {@code non-null;} where to write
-     * @param amt {@code >= 0;} the number of spaces to write
-     */
-    private static void writeSpaces(Writer out, int amt) throws IOException {
-        while (amt > 0) {
-            out.write(' ');
-            amt--;
         }
     }
 }

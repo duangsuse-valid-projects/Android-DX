@@ -25,6 +25,7 @@ import com.android.dx.rop.cst.CstProtoRef;
 import com.android.dx.util.AnnotatedOutput;
 import com.android.dx.util.FixedSizeList;
 import com.android.dx.util.IndentingWriter;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -45,17 +46,29 @@ public final class DalvInsnList extends FixedSizeList {
     private final int regCount;
 
     /**
+     * Constructs an instance. All indices initially contain {@code null}.
+     *
+     * @param size     the size of the list
+     * @param regCount count, in register-units, of the number of registers
+     *                 this code block requires.
+     */
+    public DalvInsnList(int size, int regCount) {
+        super(size);
+        this.regCount = regCount;
+    }
+
+    /**
      * Constructs and returns an immutable instance whose elements are
      * identical to the ones in the given list, in the same order.
      *
-     * @param list {@code non-null;} the list to use for elements
+     * @param list     {@code non-null;} the list to use for elements
      * @param regCount count, in register-units, of the number of registers
-     * this code block requires.
+     *                 this code block requires.
      * @return {@code non-null;} an appropriately-constructed instance of this
      * class
      */
     public static DalvInsnList makeImmutable(ArrayList<DalvInsn> list,
-            int regCount) {
+                                             int regCount) {
         int size = list.size();
         DalvInsnList result = new DalvInsnList(size, regCount);
 
@@ -65,18 +78,6 @@ public final class DalvInsnList extends FixedSizeList {
 
         result.setImmutable();
         return result;
-    }
-
-    /**
-     * Constructs an instance. All indices initially contain {@code null}.
-     *
-     * @param size the size of the list
-     * @param regCount count, in register-units, of the number of registers
-     * this code block requires.
-     */
-    public DalvInsnList(int size, int regCount) {
-        super(size);
-        this.regCount = regCount;
     }
 
     /**
@@ -94,7 +95,7 @@ public final class DalvInsnList extends FixedSizeList {
     /**
      * Sets the instruction at the given index.
      *
-     * @param n {@code >= 0, < size();} which index
+     * @param n    {@code >= 0, < size();} which index
      * @param insn {@code non-null;} the instruction to set at {@code n}
      */
     public void set(int n, DalvInsn insn) {
@@ -174,6 +175,7 @@ public final class DalvInsnList extends FixedSizeList {
      * Gets the minimum required register count implied by this
      * instance.  This includes any unused parameters that could
      * potentially be at the top of the register space.
+     *
      * @return {@code >= 0;} the required registers size
      */
     public int getRegistersSize() {
@@ -200,7 +202,7 @@ public final class DalvInsnList extends FixedSizeList {
                 if (cst instanceof CstBaseMethodRef) {
                     CstBaseMethodRef methodRef = (CstBaseMethodRef) cst;
                     boolean isStatic =
-                        (insn.getOpcode().getFamily() == Opcodes.INVOKE_STATIC);
+                            (insn.getOpcode().getFamily() == Opcodes.INVOKE_STATIC);
                     count = methodRef.getParameterWordCount(isStatic);
                 } else if (cst instanceof CstCallSiteRef) {
                     CstCallSiteRef invokeDynamicRef = (CstCallSiteRef) cst;
@@ -234,10 +236,10 @@ public final class DalvInsnList extends FixedSizeList {
     /**
      * Does a human-friendly dump of this instance.
      *
-     * @param out {@code non-null;} where to dump
-     * @param prefix {@code non-null;} prefix to attach to each line of output
+     * @param out     {@code non-null;} where to dump
+     * @param prefix  {@code non-null;} prefix to attach to each line of output
      * @param verbose whether to be verbose; verbose output includes
-     * lines for zero-size instructions and explicit constant pool indices
+     *                lines for zero-size instructions and explicit constant pool indices
      */
     public void debugPrint(Writer out, String prefix, boolean verbose) {
         IndentingWriter iw = new IndentingWriter(out, 0, prefix);
@@ -268,10 +270,10 @@ public final class DalvInsnList extends FixedSizeList {
     /**
      * Does a human-friendly dump of this instance.
      *
-     * @param out {@code non-null;} where to dump
-     * @param prefix {@code non-null;} prefix to attach to each line of output
+     * @param out     {@code non-null;} where to dump
+     * @param prefix  {@code non-null;} prefix to attach to each line of output
      * @param verbose whether to be verbose; verbose output includes
-     * lines for zero-size instructions
+     *                lines for zero-size instructions
      */
     public void debugPrint(OutputStream out, String prefix, boolean verbose) {
         Writer w = new OutputStreamWriter(out);

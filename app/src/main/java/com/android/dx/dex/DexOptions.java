@@ -18,6 +18,7 @@ package com.android.dx.dex;
 
 import com.android.dex.DexFormat;
 import com.android.dx.dex.code.DalvInsnList;
+
 import java.io.PrintStream;
 
 /**
@@ -30,25 +31,28 @@ public final class DexOptions {
      * configuration flag allowing to quickly go back on the default behavior to face up to problem.
      */
     public static final boolean ALIGN_64BIT_REGS_SUPPORT = true;
-
-   /**
-    * Does final processing of 64-bit alignment into output finisher to gets output as
-    * {@link DalvInsnList} with 64-bit registers aligned at best. Disabled the final processing is
-    * required for tools such as Dasm to avoid modifying user inputs.
-    */
-    public boolean ALIGN_64BIT_REGS_IN_OUTPUT_FINISHER = ALIGN_64BIT_REGS_SUPPORT;
-
-    /** minimum SDK version targeted */
-    public int minSdkVersion = DexFormat.API_NO_EXTENDED_OPCODES;
-
-    /** force generation of jumbo opcodes */
-    public boolean forceJumbo = false;
-
-    /** Enable user override for default and static interface method invocation. */
-    public boolean allowAllInterfaceMethodInvokes = false;
-
-    /** output stream for reporting warnings */
+    /**
+     * output stream for reporting warnings
+     */
     public final PrintStream err;
+    /**
+     * Does final processing of 64-bit alignment into output finisher to gets output as
+     * {@link DalvInsnList} with 64-bit registers aligned at best. Disabled the final processing is
+     * required for tools such as Dasm to avoid modifying user inputs.
+     */
+    public boolean ALIGN_64BIT_REGS_IN_OUTPUT_FINISHER = ALIGN_64BIT_REGS_SUPPORT;
+    /**
+     * minimum SDK version targeted
+     */
+    public int minSdkVersion = DexFormat.API_NO_EXTENDED_OPCODES;
+    /**
+     * force generation of jumbo opcodes
+     */
+    public boolean forceJumbo = false;
+    /**
+     * Enable user override for default and static interface method invocation.
+     */
+    public boolean allowAllInterfaceMethodInvokes = false;
 
     public DexOptions() {
         err = System.err;
@@ -60,6 +64,7 @@ public final class DexOptions {
 
     /**
      * Gets the dex file magic number corresponding to this instance.
+     *
      * @return string representing the dex file magic number
      */
     public String getMagic() {
@@ -68,6 +73,7 @@ public final class DexOptions {
 
     /**
      * Checks whether an API feature is supported.
+     *
      * @param apiLevel the API level to test
      * @return returns true if the current API level is at least sdkVersion
      */

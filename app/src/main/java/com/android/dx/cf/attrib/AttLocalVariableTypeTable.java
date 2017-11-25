@@ -22,7 +22,9 @@ import com.android.dx.cf.code.LocalVariableList;
  * Attribute class for standard {@code LocalVariableTypeTable} attributes.
  */
 public final class AttLocalVariableTypeTable extends BaseLocalVariables {
-    /** {@code non-null;} attribute name for attributes of this type */
+    /**
+     * {@code non-null;} attribute name for attributes of this type
+     */
     public static final String ATTRIBUTE_NAME = "LocalVariableTypeTable";
 
     /**

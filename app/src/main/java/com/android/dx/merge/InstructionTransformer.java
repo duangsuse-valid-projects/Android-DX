@@ -41,9 +41,16 @@ final class InstructionTransformer {
         this.reader.setCallSiteVisitor(new CallSiteVisitor());
     }
 
+    private static void jumboCheck(boolean isJumbo, int newIndex) {
+        if (!isJumbo && (newIndex > 0xffff)) {
+            throw new DexIndexOverflowException("Cannot merge new index " + newIndex +
+                    " into a non-jumbo instruction!");
+        }
+    }
+
     public short[] transform(IndexMap indexMap, short[] encodedInstructions) throws DexException {
         DecodedInstruction[] decodedInstructions =
-            DecodedInstruction.decodeAll(encodedInstructions);
+                DecodedInstruction.decodeAll(encodedInstructions);
         int size = decodedInstructions.length;
 
         this.indexMap = indexMap;
@@ -119,7 +126,7 @@ final class InstructionTransformer {
             int methodId = one.getIndex();
             int protoId = one.getProtoIndex();
             mappedInstructions[mappedAt++] =
-                one.withProtoIndex(indexMap.adjustMethod(methodId), indexMap.adjustProto(protoId));
+                    one.withProtoIndex(indexMap.adjustMethod(methodId), indexMap.adjustProto(protoId));
         }
     }
 
@@ -129,13 +136,6 @@ final class InstructionTransformer {
             int callSiteId = one.getIndex();
             int mappedCallSiteId = indexMap.adjustCallSite(callSiteId);
             mappedInstructions[mappedAt++] = one.withIndex(mappedCallSiteId);
-        }
-    }
-
-    private static void jumboCheck(boolean isJumbo, int newIndex) {
-        if (!isJumbo && (newIndex > 0xffff)) {
-            throw new DexIndexOverflowException("Cannot merge new index " + newIndex +
-                                   " into a non-jumbo instruction!");
         }
     }
 }

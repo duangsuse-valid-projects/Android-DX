@@ -18,6 +18,7 @@ package com.android.multidex;
 
 import com.android.dx.cf.direct.DirectClassFile;
 import com.android.dx.cf.direct.StdAttributeFactory;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,6 +31,21 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 class Path {
+
+    private final String definition;
+    private final ByteArrayOutputStream baos = new ByteArrayOutputStream(40 * 1024);
+    private final byte[] readBuffer = new byte[20 * 1024];
+    List<ClassPathElement> elements = new ArrayList<ClassPathElement>();
+    Path(String definition) throws IOException {
+        this.definition = definition;
+        for (String filePath : definition.split(Pattern.quote(File.pathSeparator))) {
+            try {
+                addElement(getClassPathElement(new File(filePath)));
+            } catch (IOException e) {
+                throw new IOException("Wrong classpath: " + e.getMessage(), e);
+            }
+        }
+    }
 
     static ClassPathElement getClassPathElement(File file)
             throws ZipException, IOException {
@@ -45,26 +61,10 @@ class Path {
         }
     }
 
-    List<ClassPathElement> elements = new ArrayList<ClassPathElement>();
-    private final String definition;
-    private final ByteArrayOutputStream baos = new ByteArrayOutputStream(40 * 1024);
-    private final byte[] readBuffer = new byte[20 * 1024];
-
-    Path(String definition) throws IOException {
-        this.definition = definition;
-        for (String filePath : definition.split(Pattern.quote(File.pathSeparator))) {
-            try {
-                addElement(getClassPathElement(new File(filePath)));
-            } catch (IOException e) {
-                throw new IOException("Wrong classpath: " + e.getMessage(), e);
-            }
-        }
-    }
-
     private static byte[] readStream(InputStream in, ByteArrayOutputStream baos, byte[] readBuffer)
             throws IOException {
         try {
-            for (;;) {
+            for (; ; ) {
                 int amt = in.read(readBuffer);
                 if (amt < 0) {
                     break;
@@ -84,7 +84,7 @@ class Path {
     }
 
     Iterable<ClassPathElement> getElements() {
-      return elements;
+        return elements;
     }
 
     private void addElement(ClassPathElement element) {

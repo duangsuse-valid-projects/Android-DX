@@ -20,10 +20,14 @@ package com.android.dx.io.instructions;
  * Base implementation of {@link CodeCursor}.
  */
 public abstract class BaseCodeCursor implements CodeCursor {
-    /** base address map */
+    /**
+     * base address map
+     */
     private final AddressMap baseAddressMap;
 
-    /** next index within {@link #baseAddressMap} to read from or write to */
+    /**
+     * next index within {@link #baseAddressMap} to read from or write to
+     */
     private int cursor;
 
     /**
@@ -34,20 +38,26 @@ public abstract class BaseCodeCursor implements CodeCursor {
         this.cursor = 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final int cursor() {
         return cursor;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final int baseAddressForCursor() {
         int mapped = baseAddressMap.get(cursor);
         return (mapped >= 0) ? mapped : cursor;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void setBaseAddress(int targetAddress, int baseAddress) {
         baseAddressMap.put(targetAddress, baseAddress);

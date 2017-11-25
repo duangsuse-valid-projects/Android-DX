@@ -18,7 +18,9 @@ package com.android.dx.io.instructions;
 
 import com.android.dx.io.IndexType;
 
-/** A decoded invoke-polymorphic instruction. */
+/**
+ * A decoded invoke-polymorphic instruction.
+ */
 public class InvokePolymorphicDecodedInstruction extends DecodedInstruction {
 
     private final int protoIndex;
@@ -33,7 +35,7 @@ public class InvokePolymorphicDecodedInstruction extends DecodedInstruction {
             int[] registers) {
         super(format, opcode, methodIndex, indexType, 0, 0);
         if (protoIndex != (short) protoIndex) {
-          throw new IllegalArgumentException("protoIndex doesn't fit in a short: " + protoIndex);
+            throw new IllegalArgumentException("protoIndex doesn't fit in a short: " + protoIndex);
         }
         this.protoIndex = protoIndex;
         this.registers = registers;

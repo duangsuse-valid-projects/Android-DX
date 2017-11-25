@@ -24,13 +24,26 @@ import com.android.dx.util.Hex;
  */
 public final class CstDouble
         extends CstLiteral64 {
-    /** {@code non-null;} instance representing {@code 0} */
+    /**
+     * {@code non-null;} instance representing {@code 0}
+     */
     public static final CstDouble VALUE_0 =
-        new CstDouble(Double.doubleToLongBits(0.0));
+            new CstDouble(Double.doubleToLongBits(0.0));
 
-    /** {@code non-null;} instance representing {@code 1} */
+    /**
+     * {@code non-null;} instance representing {@code 1}
+     */
     public static final CstDouble VALUE_1 =
-        new CstDouble(Double.doubleToLongBits(1.0));
+            new CstDouble(Double.doubleToLongBits(1.0));
+
+    /**
+     * Constructs an instance. This constructor is private; use {@link #make}.
+     *
+     * @param bits the {@code double} value as {@code long} bits
+     */
+    private CstDouble(long bits) {
+        super(bits);
+    }
 
     /**
      * Makes an instance for the given value. This may (but does not
@@ -47,35 +60,34 @@ public final class CstDouble
     }
 
     /**
-     * Constructs an instance. This constructor is private; use {@link #make}.
-     *
-     * @param bits the {@code double} value as {@code long} bits
+     * {@inheritDoc}
      */
-    private CstDouble(long bits) {
-        super(bits);
-    }
-
-    /** {@inheritDoc} */
     @Override
     public String toString() {
         long bits = getLongBits();
         return "double{0x" + Hex.u8(bits) + " / " +
-            Double.longBitsToDouble(bits) + '}';
+                Double.longBitsToDouble(bits) + '}';
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Type getType() {
         return Type.DOUBLE;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "double";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toHuman() {
         return Double.toString(Double.longBitsToDouble(getLongBits()));

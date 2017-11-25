@@ -23,6 +23,7 @@ import com.android.dx.rop.cst.CstType;
 import com.android.dx.rop.type.Type;
 import com.android.dx.util.AnnotatedOutput;
 import com.android.dx.util.Hex;
+
 import java.util.Collection;
 import java.util.TreeMap;
 
@@ -46,13 +47,17 @@ public final class TypeIdsSection extends UniformItemSection {
         typeIds = new TreeMap<Type, TypeIdItem>();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<? extends Item> items() {
         return typeIds.values();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IndexedItem get(Constant cst) {
         if (cst == null) {
@@ -184,7 +189,9 @@ public final class TypeIdsSection extends UniformItemSection {
         return indexOf(type.getClassType());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void orderItems() {
         int idx = 0;

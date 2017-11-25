@@ -19,8 +19,7 @@ package com.android.dx.cf.iface;
 /**
  * Interface for lists of fields.
  */
-public interface FieldList
-{
+public interface FieldList {
     /**
      * Get whether this instance is mutable. Note that the
      * {@code FieldList} interface itself doesn't provide any means

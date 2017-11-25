@@ -35,7 +35,9 @@ public final class SwitchData extends VariableSizeInsn {
      */
     private final CodeAddress user;
 
-    /** {@code non-null;} sorted list of switch cases (keys) */
+    /**
+     * {@code non-null;} sorted list of switch cases (keys)
+     */
     private final IntList cases;
 
     /**
@@ -44,7 +46,9 @@ public final class SwitchData extends VariableSizeInsn {
      */
     private final CodeAddress[] targets;
 
-    /** whether the output table will be packed (vs. sparse) */
+    /**
+     * whether the output table will be packed (vs. sparse)
+     */
     private final boolean packed;
 
     /**
@@ -52,11 +56,11 @@ public final class SwitchData extends VariableSizeInsn {
      * unknown ({@code -1}).
      *
      * @param position {@code non-null;} source position
-     * @param user {@code non-null;} address representing the instruction that
-     * uses this instance
-     * @param cases {@code non-null;} sorted list of switch cases (keys)
-     * @param targets {@code non-null;} corresponding list of code addresses; the
-     * branch target for each case
+     * @param user     {@code non-null;} address representing the instruction that
+     *                 uses this instance
+     * @param cases    {@code non-null;} sorted list of switch cases (keys)
+     * @param targets  {@code non-null;} corresponding list of code addresses; the
+     *                 branch target for each case
      */
     public SwitchData(SourcePosition position, CodeAddress user,
                       IntList cases, CodeAddress[] targets) {
@@ -88,115 +92,6 @@ public final class SwitchData extends VariableSizeInsn {
         this.cases = cases;
         this.targets = targets;
         this.packed = shouldPack(cases);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int codeSize() {
-        return packed ? (int) packedCodeSize(cases) :
-            (int) sparseCodeSize(cases);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void writeTo(AnnotatedOutput out) {
-        int baseAddress = user.getAddress();
-        int defaultTarget = Dops.PACKED_SWITCH.getFormat().codeSize();
-        int sz = targets.length;
-
-        if (packed) {
-            int firstCase = (sz == 0) ? 0 : cases.get(0);
-            int lastCase = (sz == 0) ? 0 : cases.get(sz - 1);
-            int outSz = lastCase - firstCase + 1;
-
-            out.writeShort(Opcodes.PACKED_SWITCH_PAYLOAD);
-            out.writeShort(outSz);
-            out.writeInt(firstCase);
-
-            int caseAt = 0;
-            for (int i = 0; i < outSz; i++) {
-                int outCase = firstCase + i;
-                int oneCase = cases.get(caseAt);
-                int relTarget;
-
-                if (oneCase > outCase) {
-                    relTarget = defaultTarget;
-                } else {
-                    relTarget = targets[caseAt].getAddress() - baseAddress;
-                    caseAt++;
-                }
-
-                out.writeInt(relTarget);
-            }
-        } else {
-            out.writeShort(Opcodes.SPARSE_SWITCH_PAYLOAD);
-            out.writeShort(sz);
-
-            for (int i = 0; i < sz; i++) {
-                out.writeInt(cases.get(i));
-            }
-
-            for (int i = 0; i < sz; i++) {
-                int relTarget = targets[i].getAddress() - baseAddress;
-                out.writeInt(relTarget);
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public DalvInsn withRegisters(RegisterSpecList registers) {
-        return new SwitchData(getPosition(), user, cases, targets);
-    }
-
-    /**
-     * Returns whether or not this instance's data will be output as packed.
-     *
-     * @return {@code true} iff the data is to be packed
-     */
-    public boolean isPacked() {
-        return packed;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected String argString() {
-        StringBuilder sb = new StringBuilder(100);
-
-        int sz = targets.length;
-        for (int i = 0; i < sz; i++) {
-            sb.append("\n    ");
-            sb.append(cases.get(i));
-            sb.append(": ");
-            sb.append(targets[i]);
-        }
-
-        return sb.toString();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected String listingString0(boolean noteIndices) {
-        int baseAddress = user.getAddress();
-        StringBuilder sb = new StringBuilder(100);
-        int sz = targets.length;
-
-        sb.append(packed ? "packed" : "sparse");
-        sb.append("-switch-payload // for switch @ ");
-        sb.append(Hex.u2(baseAddress));
-
-        for (int i = 0; i < sz; i++) {
-            int absTarget = targets[i].getAddress();
-            int relTarget = absTarget - baseAddress;
-            sb.append("\n  ");
-            sb.append(cases.get(i));
-            sb.append(": ");
-            sb.append(Hex.u4(absTarget));
-            sb.append(" // ");
-            sb.append(Hex.s4(relTarget));
-        }
-
-        return sb.toString();
     }
 
     /**
@@ -254,5 +149,124 @@ public final class SwitchData extends VariableSizeInsn {
          * execute at runtime.
          */
         return (packedSize >= 0) && (packedSize <= ((sparseSize * 5) / 4));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int codeSize() {
+        return packed ? (int) packedCodeSize(cases) :
+                (int) sparseCodeSize(cases);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void writeTo(AnnotatedOutput out) {
+        int baseAddress = user.getAddress();
+        int defaultTarget = Dops.PACKED_SWITCH.getFormat().codeSize();
+        int sz = targets.length;
+
+        if (packed) {
+            int firstCase = (sz == 0) ? 0 : cases.get(0);
+            int lastCase = (sz == 0) ? 0 : cases.get(sz - 1);
+            int outSz = lastCase - firstCase + 1;
+
+            out.writeShort(Opcodes.PACKED_SWITCH_PAYLOAD);
+            out.writeShort(outSz);
+            out.writeInt(firstCase);
+
+            int caseAt = 0;
+            for (int i = 0; i < outSz; i++) {
+                int outCase = firstCase + i;
+                int oneCase = cases.get(caseAt);
+                int relTarget;
+
+                if (oneCase > outCase) {
+                    relTarget = defaultTarget;
+                } else {
+                    relTarget = targets[caseAt].getAddress() - baseAddress;
+                    caseAt++;
+                }
+
+                out.writeInt(relTarget);
+            }
+        } else {
+            out.writeShort(Opcodes.SPARSE_SWITCH_PAYLOAD);
+            out.writeShort(sz);
+
+            for (int i = 0; i < sz; i++) {
+                out.writeInt(cases.get(i));
+            }
+
+            for (int i = 0; i < sz; i++) {
+                int relTarget = targets[i].getAddress() - baseAddress;
+                out.writeInt(relTarget);
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DalvInsn withRegisters(RegisterSpecList registers) {
+        return new SwitchData(getPosition(), user, cases, targets);
+    }
+
+    /**
+     * Returns whether or not this instance's data will be output as packed.
+     *
+     * @return {@code true} iff the data is to be packed
+     */
+    public boolean isPacked() {
+        return packed;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String argString() {
+        StringBuilder sb = new StringBuilder(100);
+
+        int sz = targets.length;
+        for (int i = 0; i < sz; i++) {
+            sb.append("\n    ");
+            sb.append(cases.get(i));
+            sb.append(": ");
+            sb.append(targets[i]);
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String listingString0(boolean noteIndices) {
+        int baseAddress = user.getAddress();
+        StringBuilder sb = new StringBuilder(100);
+        int sz = targets.length;
+
+        sb.append(packed ? "packed" : "sparse");
+        sb.append("-switch-payload // for switch @ ");
+        sb.append(Hex.u2(baseAddress));
+
+        for (int i = 0; i < sz; i++) {
+            int absTarget = targets[i].getAddress();
+            int relTarget = absTarget - baseAddress;
+            sb.append("\n  ");
+            sb.append(cases.get(i));
+            sb.append(": ");
+            sb.append(Hex.u4(absTarget));
+            sb.append(" // ");
+            sb.append(Hex.s4(relTarget));
+        }
+
+        return sb.toString();
     }
 }

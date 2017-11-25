@@ -24,7 +24,9 @@ import com.android.dx.util.FixedSizeList;
  * {@code BootstrapMethods} attributes.
  */
 public class BootstrapMethodsList extends FixedSizeList {
-    /** {@code non-null;} zero-size instance */
+    /**
+     * {@code non-null;} zero-size instance
+     */
     public static final BootstrapMethodsList EMPTY = new BootstrapMethodsList(0);
 
     /**
@@ -34,43 +36,6 @@ public class BootstrapMethodsList extends FixedSizeList {
      */
     public BootstrapMethodsList(int count) {
         super(count);
-    }
-
-    /**
-     * Gets the indicated item.
-     *
-     * @param n {@code >= 0;} which item
-     * @return {@code null-ok;} the indicated item
-     */
-    public Item get(int n) {
-        return (Item) get0(n);
-    }
-
-    /**
-     * Sets the item at the given index.
-     *
-     * @param n {@code >= 0, < size();} which element
-     * @param item {@code non-null;} the item
-     */
-    public void set(int n, Item item) {
-        if (item == null) {
-            throw new NullPointerException("item == null");
-        }
-
-        set0(n, item);
-    }
-
-    /**
-     * Sets the item at the given index.
-     *
-     * @param n {@code >= 0, < size();} which element
-     * @param declaringClass {@code non-null;} the class declaring bootstrap method.
-     * @param bootstrapMethodHandle {@code non-null;} the bootstrap method handle
-     * @param arguments {@code non-null;} the arguments of the bootstrap method
-     */
-    public void set(int n, CstType declaringClass, CstMethodHandle bootstrapMethodHandle,
-                    BootstrapMethodArgumentsList arguments) {
-        set(n, new Item(declaringClass, bootstrapMethodHandle, arguments));
     }
 
     /**
@@ -102,6 +67,43 @@ public class BootstrapMethodsList extends FixedSizeList {
         }
 
         return result;
+    }
+
+    /**
+     * Gets the indicated item.
+     *
+     * @param n {@code >= 0;} which item
+     * @return {@code null-ok;} the indicated item
+     */
+    public Item get(int n) {
+        return (Item) get0(n);
+    }
+
+    /**
+     * Sets the item at the given index.
+     *
+     * @param n    {@code >= 0, < size();} which element
+     * @param item {@code non-null;} the item
+     */
+    public void set(int n, Item item) {
+        if (item == null) {
+            throw new NullPointerException("item == null");
+        }
+
+        set0(n, item);
+    }
+
+    /**
+     * Sets the item at the given index.
+     *
+     * @param n                     {@code >= 0, < size();} which element
+     * @param declaringClass        {@code non-null;} the class declaring bootstrap method.
+     * @param bootstrapMethodHandle {@code non-null;} the bootstrap method handle
+     * @param arguments             {@code non-null;} the arguments of the bootstrap method
+     */
+    public void set(int n, CstType declaringClass, CstMethodHandle bootstrapMethodHandle,
+                    BootstrapMethodArgumentsList arguments) {
+        set(n, new Item(declaringClass, bootstrapMethodHandle, arguments));
     }
 
     public static class Item {

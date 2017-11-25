@@ -27,20 +27,24 @@ import com.android.dx.util.ToHuman;
  */
 public final class FieldAnnotationStruct
         implements ToHuman, Comparable<FieldAnnotationStruct> {
-    /** {@code non-null;} the field in question */
+    /**
+     * {@code non-null;} the field in question
+     */
     private final CstFieldRef field;
 
-    /** {@code non-null;} the associated annotations */
+    /**
+     * {@code non-null;} the associated annotations
+     */
     private AnnotationSetItem annotations;
 
     /**
      * Constructs an instance.
      *
-     * @param field {@code non-null;} the field in question
+     * @param field       {@code non-null;} the field in question
      * @param annotations {@code non-null;} the associated annotations
      */
     public FieldAnnotationStruct(CstFieldRef field,
-            AnnotationSetItem annotations) {
+                                 AnnotationSetItem annotations) {
         if (field == null) {
             throw new NullPointerException("field == null");
         }
@@ -53,29 +57,37 @@ public final class FieldAnnotationStruct
         this.annotations = annotations;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return field.hashCode();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object other) {
-        if (! (other instanceof FieldAnnotationStruct)) {
+        if (!(other instanceof FieldAnnotationStruct)) {
             return false;
         }
 
         return field.equals(((FieldAnnotationStruct) other).field);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int compareTo(FieldAnnotationStruct other) {
         return field.compareTo(other.field);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void addContents(DexFile file) {
         FieldIdsSection fieldIds = file.getFieldIds();
         MixedItemSection wordData = file.getWordData();
@@ -84,7 +96,9 @@ public final class FieldAnnotationStruct
         annotations = wordData.intern(annotations);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void writeTo(DexFile file, AnnotatedOutput out) {
         int fieldIdx = file.getFieldIds().indexOf(field);
         int annotationsOff = annotations.getAbsoluteOffset();
@@ -100,7 +114,9 @@ public final class FieldAnnotationStruct
         out.writeInt(annotationsOff);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toHuman() {
         return field.toHuman() + ": " + annotations;

@@ -22,43 +22,55 @@ import com.android.dx.io.IndexType;
  * A decoded Dalvik instruction which has two register arguments.
  */
 public final class TwoRegisterDecodedInstruction extends DecodedInstruction {
-    /** register argument "A" */
+    /**
+     * register argument "A"
+     */
     private final int a;
 
-    /** register argument "B" */
+    /**
+     * register argument "B"
+     */
     private final int b;
 
     /**
      * Constructs an instance.
      */
     public TwoRegisterDecodedInstruction(InstructionCodec format, int opcode,
-            int index, IndexType indexType, int target, long literal,
-            int a, int b) {
+                                         int index, IndexType indexType, int target, long literal,
+                                         int a, int b) {
         super(format, opcode, index, indexType, target, literal);
 
         this.a = a;
         this.b = b;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getRegisterCount() {
         return 2;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getA() {
         return a;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getB() {
         return b;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DecodedInstruction withIndex(int newIndex) {
         return new TwoRegisterDecodedInstruction(

@@ -17,6 +17,7 @@
 package com.android.dx.dex.file;
 
 import com.android.dx.util.AnnotatedOutput;
+
 import java.util.Collection;
 
 /**
@@ -24,46 +25,42 @@ import java.util.Collection;
  * of items of some sort or other.
  */
 public abstract class Section {
-    /** {@code null-ok;} name of this part, for annotation purposes */
+    /**
+     * {@code null-ok;} name of this part, for annotation purposes
+     */
     private final String name;
 
-    /** {@code non-null;} file that this instance is part of */
+    /**
+     * {@code non-null;} file that this instance is part of
+     */
     private final DexFile file;
 
-    /** {@code > 0;} alignment requirement for the final output;
-     * must be a power of 2 */
+    /**
+     * {@code > 0;} alignment requirement for the final output;
+     * must be a power of 2
+     */
     private final int alignment;
 
-    /** {@code >= -1;} offset from the start of the file to this part, or
-     * {@code -1} if not yet known */
+    /**
+     * {@code >= -1;} offset from the start of the file to this part, or
+     * {@code -1} if not yet known
+     */
     private int fileOffset;
 
-    /** whether {@link #prepare} has been called successfully on this
-     * instance */
-    private boolean prepared;
-
     /**
-     * Validates an alignment.
-     *
-     * @param alignment the alignment
-     * @throws IllegalArgumentException thrown if {@code alignment}
-     * isn't a positive power of 2
+     * whether {@link #prepare} has been called successfully on this
+     * instance
      */
-    public static void validateAlignment(int alignment) {
-        if ((alignment <= 0) ||
-            (alignment & (alignment - 1)) != 0) {
-            throw new IllegalArgumentException("invalid alignment");
-        }
-    }
+    private boolean prepared;
 
     /**
      * Constructs an instance. The file offset is initially unknown.
      *
-     * @param name {@code null-ok;} the name of this instance, for annotation
-     * purposes
-     * @param file {@code non-null;} file that this instance is part of
+     * @param name      {@code null-ok;} the name of this instance, for annotation
+     *                  purposes
+     * @param file      {@code non-null;} file that this instance is part of
      * @param alignment {@code > 0;} alignment requirement for the final output;
-     * must be a power of 2
+     *                  must be a power of 2
      */
     public Section(String name, DexFile file, int alignment) {
         if (file == null) {
@@ -77,6 +74,20 @@ public abstract class Section {
         this.alignment = alignment;
         this.fileOffset = -1;
         this.prepared = false;
+    }
+
+    /**
+     * Validates an alignment.
+     *
+     * @param alignment the alignment
+     * @throws IllegalArgumentException thrown if {@code alignment}
+     *                                  isn't a positive power of 2
+     */
+    public static void validateAlignment(int alignment) {
+        if ((alignment <= 0) ||
+                (alignment & (alignment - 1)) != 0) {
+            throw new IllegalArgumentException("invalid alignment");
+        }
     }
 
     /**
@@ -116,7 +127,7 @@ public abstract class Section {
      * once per instance.
      *
      * @param fileOffset {@code >= 0;} the desired offset from the start of the
-     * file where this for this instance
+     *                   file where this for this instance
      * @return {@code >= 0;} the offset that this instance should be placed at
      * in order to meet its alignment constraint
      */
@@ -152,8 +163,8 @@ public abstract class Section {
             fileOffset = cursor;
         } else if (fileOffset != cursor) {
             throw new RuntimeException("alignment mismatch: for " + this +
-                                       ", at " + cursor +
-                                       ", but expected " + fileOffset);
+                    ", at " + cursor +
+                    ", but expected " + fileOffset);
         }
 
         if (out.annotates()) {
@@ -193,7 +204,7 @@ public abstract class Section {
      * be contained in this section. This is only valid to call
      * once this instance has been assigned a file offset (via {@link
      * #setFileOffset}).
-     *
+     * <p>
      * <p><b>Note:</b> Subclasses must implement this as appropriate for
      * their contents.</p>
      *

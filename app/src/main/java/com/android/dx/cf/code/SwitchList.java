@@ -25,7 +25,9 @@ import com.android.dx.util.MutabilityControl;
  * also holds the default target for the switch.
  */
 public final class SwitchList extends MutabilityControl {
-    /** {@code non-null;} list of test values */
+    /**
+     * {@code non-null;} list of test values
+     */
     private final IntList values;
 
     /**
@@ -35,7 +37,9 @@ public final class SwitchList extends MutabilityControl {
      */
     private final IntList targets;
 
-    /** ultimate size of the list */
+    /**
+     * ultimate size of the list
+     */
     private int size;
 
     /**
@@ -50,7 +54,9 @@ public final class SwitchList extends MutabilityControl {
         this.size = size;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setImmutable() {
         values.setImmutable();
@@ -99,6 +105,27 @@ public final class SwitchList extends MutabilityControl {
     }
 
     /**
+     * Sets the default target. It is only valid to call this method
+     * when all the non-default elements have been set.
+     *
+     * @param target {@code >= 0;} the absolute (not relative) default target
+     *               address
+     */
+    public void setDefaultTarget(int target) {
+        throwIfImmutable();
+
+        if (target < 0) {
+            throw new IllegalArgumentException("target < 0");
+        }
+
+        if (targets.size() != size) {
+            throw new RuntimeException("non-default elements not all set");
+        }
+
+        targets.add(target);
+    }
+
+    /**
      * Gets the list of all targets. This includes one extra element at the
      * end of the list, which holds the default target.
      *
@@ -118,30 +145,9 @@ public final class SwitchList extends MutabilityControl {
     }
 
     /**
-     * Sets the default target. It is only valid to call this method
-     * when all the non-default elements have been set.
-     *
-     * @param target {@code >= 0;} the absolute (not relative) default target
-     * address
-     */
-    public void setDefaultTarget(int target) {
-        throwIfImmutable();
-
-        if (target < 0) {
-            throw new IllegalArgumentException("target < 0");
-        }
-
-        if (targets.size() != size) {
-            throw new RuntimeException("non-default elements not all set");
-        }
-
-        targets.add(target);
-    }
-
-    /**
      * Adds the given item.
      *
-     * @param value the test value
+     * @param value  the test value
      * @param target {@code >= 0;} the absolute (not relative) target address
      */
     public void add(int value, int target) {

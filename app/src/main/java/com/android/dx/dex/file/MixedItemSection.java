@@ -19,6 +19,7 @@ package com.android.dx.dex.file;
 import com.android.dex.util.ExceptionWithContext;
 import com.android.dx.util.AnnotatedOutput;
 import com.android.dx.util.Hex;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,42 +34,37 @@ import java.util.TreeMap;
  * A section of a {@code .dex} file which consists of a sequence of
  * {@link OffsettedItem} objects, which may each be of a different concrete
  * class and/or size.
- *
+ * <p>
  * <b>Note:</b> It is invalid for an item in an instance of this class to
  * have a larger alignment requirement than the alignment of this instance.
  */
 public final class MixedItemSection extends Section {
-    static enum SortType {
-        /** no sorting */
-        NONE,
-
-        /** sort by type only */
-        TYPE,
-
-        /** sort in class-major order, with instances sorted per-class */
-        INSTANCE;
-    };
-
-    /** {@code non-null;} sorter which sorts instances by type */
+    /**
+     * {@code non-null;} sorter which sorts instances by type
+     */
     private static final Comparator<OffsettedItem> TYPE_SORTER =
-        new Comparator<OffsettedItem>() {
-        @Override
-        public int compare(OffsettedItem item1, OffsettedItem item2) {
-            ItemType type1 = item1.itemType();
-            ItemType type2 = item2.itemType();
-            return type1.compareTo(type2);
-        }
-    };
+            new Comparator<OffsettedItem>() {
+                @Override
+                public int compare(OffsettedItem item1, OffsettedItem item2) {
+                    ItemType type1 = item1.itemType();
+                    ItemType type2 = item2.itemType();
+                    return type1.compareTo(type2);
+                }
+            };
 
-    /** {@code non-null;} the items in this part */
+    ;
+    /**
+     * {@code non-null;} the items in this part
+     */
     private final ArrayList<OffsettedItem> items;
-
-    /** {@code non-null;} items that have been explicitly interned */
+    /**
+     * {@code non-null;} items that have been explicitly interned
+     */
     private final HashMap<OffsettedItem, OffsettedItem> interns;
-
-    /** {@code non-null;} how to sort the items */
+    /**
+     * {@code non-null;} how to sort the items
+     */
     private final SortType sort;
-
     /**
      * {@code >= -1;} the current size of this part, in bytes, or {@code -1}
      * if not yet calculated
@@ -78,15 +74,15 @@ public final class MixedItemSection extends Section {
     /**
      * Constructs an instance. The file offset is initially unknown.
      *
-     * @param name {@code null-ok;} the name of this instance, for annotation
-     * purposes
-     * @param file {@code non-null;} file that this instance is part of
+     * @param name      {@code null-ok;} the name of this instance, for annotation
+     *                  purposes
+     * @param file      {@code non-null;} file that this instance is part of
      * @param alignment {@code > 0;} alignment requirement for the final output;
-     * must be a power of 2
-     * @param sort how the items should be sorted in the final output
+     *                  must be a power of 2
+     * @param sort      how the items should be sorted in the final output
      */
     public MixedItemSection(String name, DexFile file, int alignment,
-            SortType sort) {
+                            SortType sort) {
         super(name, file, alignment);
 
         this.items = new ArrayList<OffsettedItem>(100);
@@ -95,20 +91,26 @@ public final class MixedItemSection extends Section {
         this.writeSize = -1;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<? extends Item> items() {
         return items;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int writeSize() {
         throwIfNotPrepared();
         return writeSize;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getAbsoluteItemOffset(Item item) {
         OffsettedItem oi = (OffsettedItem) item;
@@ -227,16 +229,16 @@ public final class MixedItemSection extends Section {
      * given type. If there are none, this writes nothing. If there are any,
      * then the index is preceded by the given intro string.
      *
-     * @param out {@code non-null;} where to write to
+     * @param out      {@code non-null;} where to write to
      * @param itemType {@code non-null;} the item type of interest
-     * @param intro {@code non-null;} the introductory string for non-empty indices
+     * @param intro    {@code non-null;} the introductory string for non-empty indices
      */
     public void writeIndexAnnotation(AnnotatedOutput out, ItemType itemType,
-            String intro) {
+                                     String intro) {
         throwIfNotPrepared();
 
         TreeMap<String, OffsettedItem> index =
-            new TreeMap<String, OffsettedItem>();
+                new TreeMap<String, OffsettedItem>();
 
         for (OffsettedItem item : items) {
             if (item.itemType() == itemType) {
@@ -258,7 +260,9 @@ public final class MixedItemSection extends Section {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void prepare0() {
         DexFile file = getFile();
@@ -269,7 +273,7 @@ public final class MixedItemSection extends Section {
          */
 
         int i = 0;
-        for (;;) {
+        for (; ; ) {
             int sz = items.size();
             if (i >= sz) {
                 break;
@@ -326,7 +330,9 @@ public final class MixedItemSection extends Section {
         writeSize = outAt;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void writeTo0(AnnotatedOutput out) {
         boolean annotates = out.annotates();
@@ -358,5 +364,22 @@ public final class MixedItemSection extends Section {
         if (at != writeSize) {
             throw new RuntimeException("output size mismatch");
         }
+    }
+
+    static enum SortType {
+        /**
+         * no sorting
+         */
+        NONE,
+
+        /**
+         * sort by type only
+         */
+        TYPE,
+
+        /**
+         * sort in class-major order, with instances sorted per-class
+         */
+        INSTANCE;
     }
 }

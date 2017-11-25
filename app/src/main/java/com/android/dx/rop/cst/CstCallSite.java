@@ -24,12 +24,21 @@ import com.android.dx.rop.type.Prototype;
  */
 public final class CstCallSite extends CstArray {
     /**
+     * Constructs an instance.
+     *
+     * @param list {@code non-null;} the actual list of contents
+     */
+    private CstCallSite(List list) {
+        super(list);
+    }
+
+    /**
      * Creates an instance of a {@code CstCallSite}.
      *
-     * @param bootstrapHandle {@code non-null;} the bootstrap method handle to invoke
-     * @param nat {@code non-null;} the name and type to be resolved by the bootstrap method handle
+     * @param bootstrapHandle   {@code non-null;} the bootstrap method handle to invoke
+     * @param nat               {@code non-null;} the name and type to be resolved by the bootstrap method handle
      * @param optionalArguments {@code null-ok;} optional arguments to provide to the bootstrap
-     *     method
+     *                          method
      * @return a new {@code CstCallSite} instance
      */
     public static CstCallSite make(CstMethodHandle bootstrapHandle, CstNat nat,
@@ -54,15 +63,8 @@ public final class CstCallSite extends CstArray {
     }
 
     /**
-     * Constructs an instance.
-     *
-     * @param list {@code non-null;} the actual list of contents
+     * {@inheritDoc}
      */
-    private CstCallSite(List list) {
-        super(list);
-    }
-
-    /** {@inheritDoc} */
     @Override
     public boolean equals(Object other) {
         if (other instanceof CstCallSite) {
@@ -72,37 +74,49 @@ public final class CstCallSite extends CstArray {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return getList().hashCode();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected int compareTo0(Constant other) {
         return getList().compareTo(((CstCallSite) other).getList());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return getList().toString("call site{", ", ", "}");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "call site";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isCategory2() {
         return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toHuman() {
         return getList().toHuman("{", ", ", "}");

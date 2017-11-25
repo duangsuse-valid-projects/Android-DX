@@ -23,7 +23,9 @@ import com.android.dx.rop.type.Type;
  */
 public final class CstProtoRef extends TypedConstant {
 
-    /** {@code non-null;} the prototype */
+    /**
+     * {@code non-null;} the prototype
+     */
     private final Prototype prototype;
 
     public CstProtoRef(Prototype prototype) {
@@ -42,7 +44,9 @@ public final class CstProtoRef extends TypedConstant {
         return new CstProtoRef(prototype);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof CstProtoRef)) {
@@ -57,32 +61,42 @@ public final class CstProtoRef extends TypedConstant {
         return prototype.hashCode();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isCategory2() {
         return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "proto";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected int compareTo0(Constant other) {
         CstProtoRef otherCstProtoRef = (CstProtoRef) other;
         return prototype.compareTo(otherCstProtoRef.getPrototype());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toHuman() {
         return prototype.getDescriptor();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final String toString() {
         return typeName() + "{" + toHuman() + '}';

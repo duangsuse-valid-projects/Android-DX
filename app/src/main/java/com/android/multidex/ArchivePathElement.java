@@ -30,9 +30,6 @@ import java.util.zip.ZipFile;
  */
 class ArchivePathElement implements ClassPathElement {
 
-    static class DirectoryEntryException extends IOException {
-    }
-
     private final ZipFile archive;
 
     public ArchivePathElement(ZipFile archive) {
@@ -95,6 +92,9 @@ class ArchivePathElement implements ClassPathElement {
                 };
             }
         };
+    }
+
+    static class DirectoryEntryException extends IOException {
     }
 
 }

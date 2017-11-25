@@ -19,6 +19,7 @@ package com.android.dx.dex.cf;
 import com.android.dx.rop.code.RopMethod;
 import com.android.dx.rop.code.TranslationAdvice;
 import com.android.dx.ssa.Optimizer;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -43,41 +44,10 @@ public class OptimizerOptions {
      */
     private HashSet<String> dontOptimizeList;
 
-    /** true if the above lists have been loaded */
-    private boolean optimizeListsLoaded;
-
-
     /**
-     * Loads the optimize/don't optimize lists from files.
-     *
-     * @param optimizeListFile Pathname
-     * @param dontOptimizeListFile Pathname
+     * true if the above lists have been loaded
      */
-    public void loadOptimizeLists(String optimizeListFile,
-            String dontOptimizeListFile) {
-        if (optimizeListsLoaded) {
-            return;
-        }
-
-        if (optimizeListFile != null && dontOptimizeListFile != null) {
-            /*
-             * We shouldn't get this far. The condition should have
-             * been caught in the arg processor.
-             */
-            throw new RuntimeException("optimize and don't optimize lists "
-                    + " are mutually exclusive.");
-        }
-
-        if (optimizeListFile != null) {
-            optimizeList = loadStringsFromFile(optimizeListFile);
-        }
-
-        if (dontOptimizeListFile != null) {
-            dontOptimizeList = loadStringsFromFile(dontOptimizeListFile);
-        }
-
-        optimizeListsLoaded = true;
-    }
+    private boolean optimizeListsLoaded;
 
     /**
      * Loads a list of newline-separated strings into a new HashSet and returns
@@ -110,19 +80,51 @@ public class OptimizerOptions {
     }
 
     /**
+     * Loads the optimize/don't optimize lists from files.
+     *
+     * @param optimizeListFile     Pathname
+     * @param dontOptimizeListFile Pathname
+     */
+    public void loadOptimizeLists(String optimizeListFile,
+                                  String dontOptimizeListFile) {
+        if (optimizeListsLoaded) {
+            return;
+        }
+
+        if (optimizeListFile != null && dontOptimizeListFile != null) {
+            /*
+             * We shouldn't get this far. The condition should have
+             * been caught in the arg processor.
+             */
+            throw new RuntimeException("optimize and don't optimize lists "
+                    + " are mutually exclusive.");
+        }
+
+        if (optimizeListFile != null) {
+            optimizeList = loadStringsFromFile(optimizeListFile);
+        }
+
+        if (dontOptimizeListFile != null) {
+            dontOptimizeList = loadStringsFromFile(dontOptimizeListFile);
+        }
+
+        optimizeListsLoaded = true;
+    }
+
+    /**
      * Compares the output of the optimizer run normally with a run skipping
      * some optional steps. Results are printed to stderr.
      *
      * @param nonOptRmeth {@code non-null;} origional rop method
-     * @param paramSize {@code >= 0;} parameter size of method
-     * @param isStatic true if this method has no 'this' pointer argument.
-     * @param args {@code non-null;} translator arguments
-     * @param advice {@code non-null;} translation advice
-     * @param rmeth {@code non-null;} method with all optimization steps run.
+     * @param paramSize   {@code >= 0;} parameter size of method
+     * @param isStatic    true if this method has no 'this' pointer argument.
+     * @param args        {@code non-null;} translator arguments
+     * @param advice      {@code non-null;} translation advice
+     * @param rmeth       {@code non-null;} method with all optimization steps run.
      */
     public void compareOptimizerStep(RopMethod nonOptRmeth,
-            int paramSize, boolean isStatic, CfOptions args,
-            TranslationAdvice advice, RopMethod rmeth) {
+                                     int paramSize, boolean isStatic, CfOptions args,
+                                     TranslationAdvice advice, RopMethod rmeth) {
         EnumSet<Optimizer.OptionalStep> steps;
 
         steps = EnumSet.allOf(Optimizer.OptionalStep.class);
@@ -132,7 +134,7 @@ public class OptimizerOptions {
 
         RopMethod skipRopMethod
                 = Optimizer.optimize(nonOptRmeth,
-                        paramSize, isStatic, args.localInfo, advice, steps);
+                paramSize, isStatic, args.localInfo, advice, steps);
 
         int normalInsns
                 = rmeth.getBlocks().getEffectiveInstructionCount();
@@ -141,7 +143,7 @@ public class OptimizerOptions {
 
         System.err.printf(
                 "optimize step regs:(%d/%d/%.2f%%)"
-                + " insns:(%d/%d/%.2f%%)\n",
+                        + " insns:(%d/%d/%.2f%%)\n",
                 rmeth.getBlocks().getRegCount(),
                 skipRopMethod.getBlocks().getRegCount(),
                 100.0 * ((skipRopMethod.getBlocks().getRegCount()

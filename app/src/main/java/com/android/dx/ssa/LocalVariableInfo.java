@@ -19,6 +19,7 @@ package com.android.dx.ssa;
 import com.android.dx.rop.code.RegisterSpec;
 import com.android.dx.rop.code.RegisterSpecSet;
 import com.android.dx.util.MutabilityControl;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,8 +28,10 @@ import java.util.List;
  * com.android.dx.ssa.SsaMethod}.
  * Stolen from {@link com.android.dx.rop.code.LocalVariableInfo}.
  */
-public class LocalVariableInfo         extends MutabilityControl {
-    /** {@code >= 0;} the register count for the method */
+public class LocalVariableInfo extends MutabilityControl {
+    /**
+     * {@code >= 0;} the register count for the method
+     */
     private final int regCount;
 
     /**
@@ -45,7 +48,9 @@ public class LocalVariableInfo         extends MutabilityControl {
      */
     private final RegisterSpecSet[] blockStarts;
 
-    /** {@code non-null;} map from instructions to the variable each assigns */
+    /**
+     * {@code non-null;} map from instructions to the variable each assigns
+     */
     private final HashMap<SsaInsn, RegisterSpec> insnAssignments;
 
     /**
@@ -64,7 +69,7 @@ public class LocalVariableInfo         extends MutabilityControl {
         this.emptySet = new RegisterSpecSet(regCount);
         this.blockStarts = new RegisterSpecSet[blocks.size()];
         this.insnAssignments =
-            new HashMap<SsaInsn, RegisterSpec>(/*hint here*/);
+                new HashMap<SsaInsn, RegisterSpec>(/*hint here*/);
 
         emptySet.setImmutable();
     }
@@ -100,7 +105,7 @@ public class LocalVariableInfo         extends MutabilityControl {
      *
      * @param index {@code >= 0;} the block index
      * @param specs {@code non-null;} the register set to merge into the start set
-     * for the block
+     *              for the block
      * @return {@code true} if the merge resulted in an actual change
      * to the associated set (including storing one for the first time) or
      * {@code false} if there was no change
@@ -166,14 +171,14 @@ public class LocalVariableInfo         extends MutabilityControl {
         RegisterSpecSet result = getStarts0(index);
 
         return (result != null) ?
-            result.mutableCopy() : new RegisterSpecSet(regCount);
+                result.mutableCopy() : new RegisterSpecSet(regCount);
     }
 
     /**
      * Adds an assignment association for the given instruction and
      * register spec. This throws an exception if the instruction
      * doesn't actually perform a named variable assignment.
-     *
+     * <p>
      * <b>Note:</b> Although the instruction contains its own spec for
      * the result, it still needs to be passed in explicitly to this
      * method, since the spec that is stored here should always have a
@@ -218,7 +223,7 @@ public class LocalVariableInfo         extends MutabilityControl {
     }
 
     public void debugDump() {
-        for (int index = 0 ; index < blockStarts.length; index++) {
+        for (int index = 0; index < blockStarts.length; index++) {
             if (blockStarts[index] == null) {
                 continue;
             }

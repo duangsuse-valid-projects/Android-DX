@@ -22,7 +22,9 @@ package com.android.dx.io.instructions;
  */
 public final class SparseSwitchPayloadDecodedInstruction
         extends DecodedInstruction {
-    /** array of key values */
+    /**
+     * array of key values
+     */
     private final int[] keys;
 
     /**
@@ -35,7 +37,7 @@ public final class SparseSwitchPayloadDecodedInstruction
      * Constructs an instance.
      */
     public SparseSwitchPayloadDecodedInstruction(InstructionCodec format,
-            int opcode, int[] keys, int[] targets) {
+                                                 int opcode, int[] keys, int[] targets) {
         super(format, opcode, 0, null, 0, 0L);
 
         if (keys.length != targets.length) {
@@ -46,7 +48,9 @@ public final class SparseSwitchPayloadDecodedInstruction
         this.targets = targets;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getRegisterCount() {
         return 0;
@@ -60,7 +64,9 @@ public final class SparseSwitchPayloadDecodedInstruction
         return targets;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DecodedInstruction withIndex(int newIndex) {
         throw new UnsupportedOperationException("no index in instruction");

@@ -80,12 +80,16 @@ public final class CodeReader {
         methodVisitor = visitor;
     }
 
-    /** Sets {@code visitor} as the visitor for all method and proto instructions. */
+    /**
+     * Sets {@code visitor} as the visitor for all method and proto instructions.
+     */
     public void setMethodAndProtoVisitor(Visitor visitor) {
         methodAndProtoVisitor = visitor;
     }
 
-    /** Sets {@code visitor} as the visitor for all call site instructions. */
+    /**
+     * Sets {@code visitor} as the visitor for all call site instructions.
+     */
     public void setCallSiteVisitor(Visitor visitor) {
         callSiteVisitor = visitor;
     }
@@ -106,7 +110,7 @@ public final class CodeReader {
 
     public void visitAll(short[] encodedInstructions) throws DexException {
         DecodedInstruction[] decodedInstructions =
-            DecodedInstruction.decodeAll(encodedInstructions);
+                DecodedInstruction.decodeAll(encodedInstructions);
         visitAll(decodedInstructions);
     }
 
@@ -114,12 +118,24 @@ public final class CodeReader {
         Visitor visitor = null;
 
         switch (OpcodeInfo.getIndexType(one.getOpcode())) {
-            case STRING_REF:           visitor = stringVisitor;         break;
-            case TYPE_REF:             visitor = typeVisitor;           break;
-            case FIELD_REF:            visitor = fieldVisitor;          break;
-            case METHOD_REF:           visitor = methodVisitor;         break;
-            case METHOD_AND_PROTO_REF: visitor = methodAndProtoVisitor; break;
-            case CALL_SITE_REF:        visitor = callSiteVisitor;       break;
+            case STRING_REF:
+                visitor = stringVisitor;
+                break;
+            case TYPE_REF:
+                visitor = typeVisitor;
+                break;
+            case FIELD_REF:
+                visitor = fieldVisitor;
+                break;
+            case METHOD_REF:
+                visitor = methodVisitor;
+                break;
+            case METHOD_AND_PROTO_REF:
+                visitor = methodAndProtoVisitor;
+                break;
+            case CALL_SITE_REF:
+                visitor = callSiteVisitor;
+                break;
         }
 
         if (visitor == null) {

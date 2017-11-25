@@ -31,6 +31,7 @@ import com.android.dx.rop.cst.CstString;
 import com.android.dx.rop.cst.CstType;
 import com.android.dx.rop.type.Type;
 import com.android.dx.util.ByteArrayAnnotatedOutput;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
@@ -46,10 +47,14 @@ import java.util.zip.Adler32;
  * file, which itself consists of a set of Dalvik classes.
  */
 public final class DexFile {
-    /** options controlling the creation of the file */
+    /**
+     * options controlling the creation of the file
+     */
     private final DexOptions dexOptions;
 
-    /** {@code non-null;} word data section */
+    /**
+     * {@code non-null;} word data section
+     */
     private final MixedItemSection wordData;
 
     /**
@@ -66,40 +71,64 @@ public final class DexFile {
      */
     private final MixedItemSection map;
 
-    /** {@code non-null;} string data section */
+    /**
+     * {@code non-null;} string data section
+     */
     private final MixedItemSection stringData;
 
-    /** {@code non-null;} string identifiers section */
+    /**
+     * {@code non-null;} string identifiers section
+     */
     private final StringIdsSection stringIds;
 
-    /** {@code non-null;} type identifiers section */
+    /**
+     * {@code non-null;} type identifiers section
+     */
     private final TypeIdsSection typeIds;
 
-    /** {@code non-null;} prototype identifiers section */
+    /**
+     * {@code non-null;} prototype identifiers section
+     */
     private final ProtoIdsSection protoIds;
 
-    /** {@code non-null;} field identifiers section */
+    /**
+     * {@code non-null;} field identifiers section
+     */
     private final FieldIdsSection fieldIds;
 
-    /** {@code non-null;} method identifiers section */
+    /**
+     * {@code non-null;} method identifiers section
+     */
     private final MethodIdsSection methodIds;
 
-    /** {@code non-null;} class definitions section */
+    /**
+     * {@code non-null;} class definitions section
+     */
     private final ClassDefsSection classDefs;
 
-    /** {@code non-null;} class data section */
+    /**
+     * {@code non-null;} class data section
+     */
     private final MixedItemSection classData;
 
-    /** {@code null-ok;} call site identifiers section, only exists for SDK >= 26 */
+    /**
+     * {@code null-ok;} call site identifiers section, only exists for SDK >= 26
+     */
     private final CallSiteIdsSection callSiteIds;
 
-    /** {@code null-ok;} method handles section, only exists for SDK >= 26 */
+    /**
+     * {@code null-ok;} method handles section, only exists for SDK >= 26
+     */
     private final MethodHandlesSection methodHandles;
 
-    /** {@code non-null;} byte data section */
+    /**
+     * {@code non-null;} byte data section
+     */
     private final MixedItemSection byteData;
 
-    /** {@code non-null;} file header */
+    /**
+     * {@code non-null;} file header
+     */
     private final HeaderSection header;
 
     /**
@@ -108,10 +137,14 @@ public final class DexFile {
      */
     private final Section[] sections;
 
-    /** {@code >= -1;} total file size or {@code -1} if unknown */
+    /**
+     * {@code >= -1;} total file size or {@code -1} if unknown
+     */
     private int fileSize;
 
-    /** {@code >= 40;} maximum width of the file dump */
+    /**
+     * {@code >= 40;} maximum width of the file dump
+     */
     private int dumpWidth;
 
     /**
@@ -126,7 +159,7 @@ public final class DexFile {
         typeLists = new MixedItemSection(null, this, 4, SortType.NONE);
         wordData = new MixedItemSection("word_data", this, 4, SortType.TYPE);
         stringData =
-            new MixedItemSection("string_data", this, 1, SortType.INSTANCE);
+                new MixedItemSection("string_data", this, 1, SortType.INSTANCE);
         classData = new MixedItemSection(null, this, 1, SortType.NONE);
         byteData = new MixedItemSection("byte_data", this, 1, SortType.TYPE);
         stringIds = new StringIdsSection(this);
@@ -151,21 +184,70 @@ public final class DexFile {
             callSiteIds = new CallSiteIdsSection(this);
             methodHandles = new MethodHandlesSection(this);
 
-            sections = new Section[] {
-                header, stringIds, typeIds, protoIds, fieldIds, methodIds, classDefs,
-                callSiteIds, methodHandles,
-                wordData, typeLists, stringData, byteData, classData, map };
+            sections = new Section[]{
+                    header, stringIds, typeIds, protoIds, fieldIds, methodIds, classDefs,
+                    callSiteIds, methodHandles,
+                    wordData, typeLists, stringData, byteData, classData, map};
         } else {
             callSiteIds = null;
             methodHandles = null;
 
-            sections = new Section[] {
-                header, stringIds, typeIds, protoIds, fieldIds, methodIds, classDefs,
-                wordData, typeLists, stringData, byteData, classData, map };
+            sections = new Section[]{
+                    header, stringIds, typeIds, protoIds, fieldIds, methodIds, classDefs,
+                    wordData, typeLists, stringData, byteData, classData, map};
         }
 
         fileSize = -1;
         dumpWidth = 79;
+    }
+
+    /**
+     * Calculates the signature for the {@code .dex} file in the
+     * given array, and modify the array to contain it.
+     *
+     * @param bytes {@code non-null;} the bytes of the file
+     * @param len   length of {@code .dex} file encoded in the array
+     */
+    private static void calcSignature(byte[] bytes, int len) {
+        MessageDigest md;
+
+        try {
+            md = MessageDigest.getInstance("SHA-1");
+        } catch (NoSuchAlgorithmException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        md.update(bytes, 32, len - 32);
+
+        try {
+            int amt = md.digest(bytes, 12, 20);
+            if (amt != 20) {
+                throw new RuntimeException("unexpected digest write: " + amt +
+                        " bytes");
+            }
+        } catch (DigestException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    /**
+     * Calculates the checksum for the {@code .dex} file in the
+     * given array, and modify the array to contain it.
+     *
+     * @param bytes {@code non-null;} the bytes of the file
+     * @param len   length of {@code .dex} file encoded in the array
+     */
+    private static void calcChecksum(byte[] bytes, int len) {
+        Adler32 a32 = new Adler32();
+
+        a32.update(bytes, 12, len - 12);
+
+        int sum = (int) a32.getValue();
+
+        bytes[8] = (byte) sum;
+        bytes[9] = (byte) (sum >> 8);
+        bytes[10] = (byte) (sum >> 16);
+        bytes[11] = (byte) (sum >> 24);
     }
 
     /**
@@ -213,24 +295,23 @@ public final class DexFile {
      * Writes the contents of this instance as either a binary or a
      * human-readable form, or both.
      *
-     * @param out {@code null-ok;} where to write to
+     * @param out      {@code null-ok;} where to write to
      * @param humanOut {@code null-ok;} where to write human-oriented output to
-     * @param verbose whether to be verbose when writing human-oriented output
+     * @param verbose  whether to be verbose when writing human-oriented output
      */
     public void writeTo(OutputStream out, Writer humanOut, boolean verbose)
-        throws IOException {
+            throws IOException {
         writeTo(out, null /* storage */, humanOut, verbose);
     }
-
 
     /**
      * Writes the contents of this instance as either a binary or a
      * human-readable form, or both.
      *
-     * @param out {@code null-ok;} where to write to
-     * @param storage temporary storage for storing dexing.
+     * @param out      {@code null-ok;} where to write to
+     * @param storage  temporary storage for storing dexing.
      * @param humanOut {@code null-ok;} where to write human-oriented output to
-     * @param verbose whether to be verbose when writing human-oriented output
+     * @param verbose  whether to be verbose when writing human-oriented output
      */
     public void writeTo(OutputStream out, Storage storage, Writer humanOut, boolean verbose)
             throws IOException {
@@ -256,17 +337,16 @@ public final class DexFile {
         return toDex0(false, false, storage);
     }
 
-
     /**
      * Returns the contents of this instance as a {@code .dex} file,
      * in {@code byte[]} form.
      *
      * @param humanOut {@code null-ok;} where to write human-oriented output to
-     * @param verbose whether to be verbose when writing human-oriented output
+     * @param verbose  whether to be verbose when writing human-oriented output
      * @return {@code non-null;} a {@code .dex} file for this instance
      */
     public byte[] toDex(Writer humanOut, boolean verbose)
-        throws IOException {
+            throws IOException {
         boolean annotate = (humanOut != null);
         ByteArrayAnnotatedOutput result = toDex0(annotate, verbose, null);
 
@@ -292,7 +372,7 @@ public final class DexFile {
 
     /**
      * Gets the total file size, if known.
-     *
+     * <p>
      * <p>This is package-scope in order to allow
      * the {@link HeaderSection} to set itself up properly.</p>
      *
@@ -309,7 +389,7 @@ public final class DexFile {
 
     /**
      * Gets the string data section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow
      * the various {@link Item} instances to add items to the
      * instance.</p>
@@ -322,7 +402,7 @@ public final class DexFile {
 
     /**
      * Gets the word data section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow
      * the various {@link Item} instances to add items to the
      * instance.</p>
@@ -335,7 +415,7 @@ public final class DexFile {
 
     /**
      * Gets the type lists section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow
      * the various {@link Item} instances to add items to the
      * instance.</p>
@@ -348,7 +428,7 @@ public final class DexFile {
 
     /**
      * Gets the map section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow the header section
      * to query it.</p>
      *
@@ -360,7 +440,7 @@ public final class DexFile {
 
     /**
      * Gets the string identifiers section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow
      * the various {@link Item} instances to add items to the
      * instance.</p>
@@ -373,7 +453,7 @@ public final class DexFile {
 
     /**
      * Gets the class definitions section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow
      * the various {@link Item} instances to add items to the
      * instance.</p>
@@ -386,7 +466,7 @@ public final class DexFile {
 
     /**
      * Gets the class data section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow
      * the various {@link Item} instances to add items to the
      * instance.</p>
@@ -399,7 +479,7 @@ public final class DexFile {
 
     /**
      * Gets the type identifiers section.
-     *
+     * <p>
      * <p>This is public in order to allow
      * the various {@link Item} instances to add items to the
      * instance and help early counting of type ids.</p>
@@ -412,7 +492,7 @@ public final class DexFile {
 
     /**
      * Gets the prototype identifiers section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow
      * the various {@link Item} instances to add items to the
      * instance.</p>
@@ -425,7 +505,7 @@ public final class DexFile {
 
     /**
      * Gets the field identifiers section.
-     *
+     * <p>
      * <p>This is public in order to allow
      * the various {@link Item} instances to add items to the
      * instance and help early counting of field ids.</p>
@@ -438,7 +518,7 @@ public final class DexFile {
 
     /**
      * Gets the method identifiers section.
-     *
+     * <p>
      * <p>This is public in order to allow
      * the various {@link Item} instances to add items to the
      * instance and help early counting of method ids.</p>
@@ -451,7 +531,7 @@ public final class DexFile {
 
     /**
      * Gets the method handles section.
-     *
+     * <p>
      * <p>This is public in order to allow
      * the various {@link Item} instances to add items to the
      * instance and help early counting of method handles.</p>
@@ -464,7 +544,7 @@ public final class DexFile {
 
     /**
      * Gets the call site identifiers section.
-     *
+     * <p>
      * <p>This is public in order to allow
      * the various {@link Item} instances to add items to the
      * instance and help early counting of call site identifiers.</p>
@@ -477,7 +557,7 @@ public final class DexFile {
 
     /**
      * Gets the byte data section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow
      * the various {@link Item} instances to add items to the
      * instance.</p>
@@ -491,7 +571,7 @@ public final class DexFile {
     /**
      * Gets the first section of the file that is to be considered
      * part of the data section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow the header section
      * to query it.</p>
      *
@@ -504,7 +584,7 @@ public final class DexFile {
     /**
      * Gets the last section of the file that is to be considered
      * part of the data section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow the header section
      * to query it.</p>
      *
@@ -577,39 +657,16 @@ public final class DexFile {
     }
 
     /**
-     * Holder for a byte[] that can grow on demand.
-     */
-    public static final class Storage {
-        byte[] storage;
-        public Storage(byte[] storage) {
-            this.storage = storage;
-        }
-
-        public byte[] getStorage(int requestedLength) {
-            if (storage.length < requestedLength) {
-                Logger.getAnonymousLogger().log(
-                        Level.FINER,
-                        "DexFile storage too small  "
-                                + storage.length
-                                + " vs "
-                                + requestedLength);
-                storage = new byte[requestedLength];
-            }
-            return storage;
-        }
-    }
-
-    /**
      * Returns the contents of this instance as a {@code .dex} file,
      * in a {@link ByteArrayAnnotatedOutput} instance.
      *
      * @param annotate whether or not to keep annotations
-     * @param verbose if annotating, whether to be verbose
+     * @param verbose  if annotating, whether to be verbose
      * @return {@code non-null;} a {@code .dex} file for this instance
      */
     private ByteArrayAnnotatedOutput toDex0(boolean annotate,
-            boolean verbose,
-            Storage storage) {
+                                            boolean verbose,
+                                            Storage storage) {
         /*
          * The following is ordered so that the prepare() calls which
          * add items happen before the calls to the sections that get
@@ -699,7 +756,7 @@ public final class DexFile {
             try {
                 final Section one = sections[i];
                 if ((one == callSiteIds || one == methodHandles) && one.items().isEmpty()) {
-                   continue;
+                    continue;
                 }
                 final int zeroCount = one.getFileOffset() - out.getCursor();
                 if (zeroCount < 0) {
@@ -755,51 +812,26 @@ public final class DexFile {
     }
 
     /**
-     * Calculates the signature for the {@code .dex} file in the
-     * given array, and modify the array to contain it.
-     *
-     * @param bytes {@code non-null;} the bytes of the file
-     * @param len length of {@code .dex} file encoded in the array
+     * Holder for a byte[] that can grow on demand.
      */
-    private static void calcSignature(byte[] bytes, int len) {
-        MessageDigest md;
+    public static final class Storage {
+        byte[] storage;
 
-        try {
-            md = MessageDigest.getInstance("SHA-1");
-        } catch (NoSuchAlgorithmException ex) {
-            throw new RuntimeException(ex);
+        public Storage(byte[] storage) {
+            this.storage = storage;
         }
 
-        md.update(bytes, 32, len - 32);
-
-        try {
-            int amt = md.digest(bytes, 12, 20);
-            if (amt != 20) {
-                throw new RuntimeException("unexpected digest write: " + amt +
-                        " bytes");
+        public byte[] getStorage(int requestedLength) {
+            if (storage.length < requestedLength) {
+                Logger.getAnonymousLogger().log(
+                        Level.FINER,
+                        "DexFile storage too small  "
+                                + storage.length
+                                + " vs "
+                                + requestedLength);
+                storage = new byte[requestedLength];
             }
-        } catch (DigestException ex) {
-            throw new RuntimeException(ex);
+            return storage;
         }
-    }
-
-    /**
-     * Calculates the checksum for the {@code .dex} file in the
-     * given array, and modify the array to contain it.
-     *
-     * @param bytes {@code non-null;} the bytes of the file
-     * @param len length of {@code .dex} file encoded in the array
-     */
-    private static void calcChecksum(byte[] bytes, int len) {
-        Adler32 a32 = new Adler32();
-
-        a32.update(bytes, 12, len - 12);
-
-        int sum = (int) a32.getValue();
-
-        bytes[8]  = (byte) sum;
-        bytes[9]  = (byte) (sum >> 8);
-        bytes[10] = (byte) (sum >> 16);
-        bytes[11] = (byte) (sum >> 24);
     }
 }

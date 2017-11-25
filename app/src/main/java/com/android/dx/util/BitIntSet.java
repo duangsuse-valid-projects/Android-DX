@@ -23,7 +23,9 @@ import java.util.NoSuchElementException;
  */
 public class BitIntSet implements IntSet {
 
-    /** also accessed in ListIntSet */
+    /**
+     * also accessed in ListIntSet
+     */
     int[] bits;
 
     /**
@@ -35,7 +37,9 @@ public class BitIntSet implements IntSet {
         bits = Bits.makeBitSet(max);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void add(int value) {
         ensureCapacity(value);
@@ -56,7 +60,9 @@ public class BitIntSet implements IntSet {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void remove(int value) {
         if (value < Bits.getMax(bits)) {
@@ -64,13 +70,17 @@ public class BitIntSet implements IntSet {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean has(int value) {
         return (value < Bits.getMax(bits)) && Bits.get(bits, value);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void merge(IntSet other) {
         if (other instanceof BitIntSet) {
@@ -95,13 +105,17 @@ public class BitIntSet implements IntSet {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int elements() {
         return Bits.bitCount(bits);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IntIterator iterator() {
         return new IntIterator() {
@@ -122,14 +136,16 @@ public class BitIntSet implements IntSet {
 
                 int ret = idx;
 
-                idx = Bits.findFirst(bits, idx+1);
+                idx = Bits.findFirst(bits, idx + 1);
 
                 return ret;
             }
         };
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -138,7 +154,7 @@ public class BitIntSet implements IntSet {
 
         boolean first = true;
         for (int i = Bits.findFirst(bits, 0)
-                ; i >= 0
+             ; i >= 0
                 ; i = Bits.findFirst(bits, i + 1)) {
             if (!first) {
                 sb.append(", ");

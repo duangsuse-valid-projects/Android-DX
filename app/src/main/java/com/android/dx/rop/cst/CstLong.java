@@ -24,11 +24,24 @@ import com.android.dx.util.Hex;
  */
 public final class CstLong
         extends CstLiteral64 {
-    /** {@code non-null;} instance representing {@code 0} */
+    /**
+     * {@code non-null;} instance representing {@code 0}
+     */
     public static final CstLong VALUE_0 = make(0);
 
-    /** {@code non-null;} instance representing {@code 1} */
+    /**
+     * {@code non-null;} instance representing {@code 1}
+     */
     public static final CstLong VALUE_1 = make(1);
+
+    /**
+     * Constructs an instance. This constructor is private; use {@link #make}.
+     *
+     * @param value the {@code long} value
+     */
+    private CstLong(long value) {
+        super(value);
+    }
 
     /**
      * Makes an instance for the given value. This may (but does not
@@ -45,34 +58,33 @@ public final class CstLong
     }
 
     /**
-     * Constructs an instance. This constructor is private; use {@link #make}.
-     *
-     * @param value the {@code long} value
+     * {@inheritDoc}
      */
-    private CstLong(long value) {
-        super(value);
-    }
-
-    /** {@inheritDoc} */
     @Override
     public String toString() {
         long value = getLongBits();
         return "long{0x" + Hex.u8(value) + " / " + value + '}';
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Type getType() {
         return Type.LONG;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "long";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toHuman() {
         return Long.toString(getLongBits());

@@ -22,6 +22,7 @@ import com.android.dex.FieldId;
 import com.android.dex.MethodId;
 import com.android.dex.ProtoId;
 import com.android.dex.TableOfContents;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -35,6 +36,18 @@ public final class DexIndexPrinter {
     public DexIndexPrinter(File file) throws IOException {
         this.dex = new Dex(file);
         this.tableOfContents = dex.getTableOfContents();
+    }
+
+    public static void main(String[] args) throws IOException {
+        DexIndexPrinter indexPrinter = new DexIndexPrinter(new File(args[0]));
+        indexPrinter.printMap();
+        indexPrinter.printStrings();
+        indexPrinter.printTypeIds();
+        indexPrinter.printProtoIds();
+        indexPrinter.printFieldIds();
+        indexPrinter.printMethodIds();
+        indexPrinter.printTypeLists();
+        indexPrinter.printClassDefs();
     }
 
     private void printMap() {
@@ -113,17 +126,5 @@ public final class DexIndexPrinter {
             System.out.println("class def " + index + ": " + classDef);
             index++;
         }
-    }
-
-    public static void main(String[] args) throws IOException {
-        DexIndexPrinter indexPrinter = new DexIndexPrinter(new File(args[0]));
-        indexPrinter.printMap();
-        indexPrinter.printStrings();
-        indexPrinter.printTypeIds();
-        indexPrinter.printProtoIds();
-        indexPrinter.printFieldIds();
-        indexPrinter.printMethodIds();
-        indexPrinter.printTypeLists();
-        indexPrinter.printClassDefs();
     }
 }

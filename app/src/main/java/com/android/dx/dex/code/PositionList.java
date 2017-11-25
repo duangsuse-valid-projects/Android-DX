@@ -24,7 +24,9 @@ import com.android.dx.util.FixedSizeList;
  * method to extract an instance out of a {@link DalvInsnList}.
  */
 public final class PositionList extends FixedSizeList {
-    /** {@code non-null;} empty instance */
+    /**
+     * {@code non-null;} empty instance
+     */
     public static final PositionList EMPTY = new PositionList(0);
 
     /**
@@ -47,12 +49,21 @@ public final class PositionList extends FixedSizeList {
     public static final int IMPORTANT = 3;
 
     /**
+     * Constructs an instance. All indices initially contain {@code null}.
+     *
+     * @param size {@code >= 0;} the size of the list
+     */
+    public PositionList(int size) {
+        super(size);
+    }
+
+    /**
      * Extracts and returns the source position information out of an
      * instruction list.
      *
-     * @param insns {@code non-null;} instructions to convert
+     * @param insns   {@code non-null;} instructions to convert
      * @param howMuch how much information should be included; one of the
-     * static constants defined by this class
+     *                static constants defined by this class
      * @return {@code non-null;} the positions list
      */
     public static PositionList make(DalvInsnList insns, int howMuch) {
@@ -81,7 +92,8 @@ public final class PositionList extends FixedSizeList {
             DalvInsn insn = insns.get(i);
 
             if (insn instanceof CodeAddress) {
-                lastWasTarget = true;;
+                lastWasTarget = true;
+                ;
                 continue;
             }
 
@@ -112,15 +124,6 @@ public final class PositionList extends FixedSizeList {
     }
 
     /**
-     * Constructs an instance. All indices initially contain {@code null}.
-     *
-     * @param size {@code >= 0;} the size of the list
-     */
-    public PositionList(int size) {
-        super(size);
-    }
-
-    /**
      * Gets the element at the given index. It is an error to call
      * this with the index for an element which was never set; if you
      * do that, this will throw {@code NullPointerException}.
@@ -135,7 +138,7 @@ public final class PositionList extends FixedSizeList {
     /**
      * Sets the entry at the given index.
      *
-     * @param n {@code >= 0, < size();} which index
+     * @param n     {@code >= 0, < size();} which index
      * @param entry {@code non-null;} the entry to set at {@code n}
      */
     public void set(int n, Entry entry) {
@@ -146,19 +149,23 @@ public final class PositionList extends FixedSizeList {
      * Entry in a position list.
      */
     public static class Entry {
-        /** {@code >= 0;} address of this entry */
+        /**
+         * {@code >= 0;} address of this entry
+         */
         private final int address;
 
-        /** {@code non-null;} corresponding source position information */
+        /**
+         * {@code non-null;} corresponding source position information
+         */
         private final SourcePosition position;
 
         /**
          * Constructs an instance.
          *
-         * @param address {@code >= 0;} address of this entry
+         * @param address  {@code >= 0;} address of this entry
          * @param position {@code non-null;} corresponding source position information
          */
-        public Entry (int address, SourcePosition position) {
+        public Entry(int address, SourcePosition position) {
             if (address < 0) {
                 throw new IllegalArgumentException("address < 0");
             }

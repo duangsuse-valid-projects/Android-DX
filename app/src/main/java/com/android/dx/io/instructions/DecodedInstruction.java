@@ -21,6 +21,7 @@ import com.android.dx.io.IndexType;
 import com.android.dx.io.OpcodeInfo;
 import com.android.dx.io.Opcodes;
 import com.android.dx.util.Hex;
+
 import java.io.EOFException;
 
 /**
@@ -28,7 +29,7 @@ import java.io.EOFException;
  * numeric opcode, an optional index type, and any additional
  * arguments of the instruction. The additional arguments (if any) are
  * represented as uninterpreted data.
- *
+ * <p>
  * <p><b>Note:</b> The names of the arguments are <i>not</i> meant to
  * match the names given in the Dalvik instruction format
  * specification, specification which just names fields (somewhat)
@@ -37,16 +38,24 @@ import java.io.EOFException;
  * consistently named alphabetically.</p>
  */
 public abstract class DecodedInstruction {
-    /** non-null; instruction format / codec */
+    /**
+     * non-null; instruction format / codec
+     */
     private final InstructionCodec format;
 
-    /** opcode number */
+    /**
+     * opcode number
+     */
     private final int opcode;
 
-    /** constant index argument */
+    /**
+     * constant index argument
+     */
     private final int index;
 
-    /** null-ok; index type */
+    /**
+     * null-ok; index type
+     */
     private final IndexType indexType;
 
     /**
@@ -62,6 +71,27 @@ public abstract class DecodedInstruction {
      * (formats 10x, 20t, 30t, and 32x)
      */
     private final long literal;
+
+    /**
+     * Constructs an instance.
+     */
+    public DecodedInstruction(InstructionCodec format, int opcode,
+                              int index, IndexType indexType, int target, long literal) {
+        if (format == null) {
+            throw new NullPointerException("format == null");
+        }
+
+        if (!Opcodes.isValidShape(opcode)) {
+            throw new IllegalArgumentException("invalid opcode");
+        }
+
+        this.format = format;
+        this.opcode = opcode;
+        this.index = index;
+        this.indexType = indexType;
+        this.target = target;
+        this.literal = literal;
+    }
 
     /**
      * Decodes an instruction from the given input source.
@@ -93,27 +123,6 @@ public abstract class DecodedInstruction {
         }
 
         return decoded;
-    }
-
-    /**
-     * Constructs an instance.
-     */
-    public DecodedInstruction(InstructionCodec format, int opcode,
-            int index, IndexType indexType, int target, long literal) {
-        if (format == null) {
-            throw new NullPointerException("format == null");
-        }
-
-        if (!Opcodes.isValidShape(opcode)) {
-            throw new IllegalArgumentException("invalid opcode");
-        }
-
-        this.format = format;
-        this.opcode = opcode;
-        this.index = index;
-        this.indexType = indexType;
-        this.target = target;
-        this.literal = literal;
     }
 
     public final InstructionCodec getFormat() {
@@ -476,12 +485,16 @@ public abstract class DecodedInstruction {
      */
     public abstract DecodedInstruction withIndex(int newIndex);
 
-    /** Update the instruction with a new 45cc or 4rcc proto index. */
+    /**
+     * Update the instruction with a new 45cc or 4rcc proto index.
+     */
     public DecodedInstruction withProtoIndex(int newIndex, int newProtoIndex) {
         throw new IllegalStateException(getClass().toString());
     }
 
-    /** Returns a 45cc or 4rcc proto index. */
+    /**
+     * Returns a 45cc or 4rcc proto index.
+     */
     public short getProtoIndex() {
         throw new IllegalStateException(getClass().toString());
     }

@@ -21,45 +21,52 @@ package com.android.dex;
  * files, and helper methods for same.
  */
 public final class DexFormat {
-    private DexFormat() {}
-
-    /** API level to target in order to generate const-method-handle and const-method-type */
+    /**
+     * API level to target in order to generate const-method-handle and const-method-type
+     */
     public static final int API_CONST_METHOD_HANDLE = 28;
-
-    /** API level to target in order to generate invoke-polymorphic and invoke-custom */
+    /**
+     * API level to target in order to generate invoke-polymorphic and invoke-custom
+     */
     public static final int API_METHOD_HANDLES = 26;
-
-    /** API level to target in order to define default and static interface methods */
+    /**
+     * API level to target in order to define default and static interface methods
+     */
     public static final int API_DEFINE_INTERFACE_METHODS = 24;
-
-    /** API level to target in order to invoke default and static interface methods */
+    /**
+     * API level to target in order to invoke default and static interface methods
+     */
     public static final int API_INVOKE_INTERFACE_METHODS = 24;
-
-    /** API level at which the invocation of static interface methods is permitted by dx.
-     * This value has been determined experimentally by testing on different VM versions. */
+    /**
+     * API level at which the invocation of static interface methods is permitted by dx.
+     * This value has been determined experimentally by testing on different VM versions.
+     */
     public static final int API_INVOKE_STATIC_INTERFACE_METHODS = 21;
-
-    /** API level to target in order to suppress extended opcode usage */
+    /**
+     * API level to target in order to suppress extended opcode usage
+     */
     public static final int API_NO_EXTENDED_OPCODES = 13;
-
     /**
      * API level to target in order to produce the most modern file
      * format
      */
     public static final int API_CURRENT = API_CONST_METHOD_HANDLE;
-
-    /** dex file version number for API level 28 and earlier */
+    /**
+     * dex file version number for API level 28 and earlier
+     */
     public static final String VERSION_FOR_API_28 = "039";
-
-    /** dex file version number for API level 26 and earlier */
+    /**
+     * dex file version number for API level 26 and earlier
+     */
     public static final String VERSION_FOR_API_26 = "038";
-
-    /** dex file version number for API level 24 and earlier */
+    /**
+     * dex file version number for API level 24 and earlier
+     */
     public static final String VERSION_FOR_API_24 = "037";
-
-    /** dex file version number for API level 13 and earlier */
+    /**
+     * dex file version number for API level 13 and earlier
+     */
     public static final String VERSION_FOR_API_13 = "035";
-
     /**
      * Dex file version number for dalvik.
      * <p>
@@ -68,36 +75,37 @@ public final class DexFormat {
      * </p>
      */
     public static final String VERSION_CURRENT = VERSION_FOR_API_28;
-
     /**
      * file name of the primary {@code .dex} file inside an
      * application or library {@code .jar} file
      */
     public static final String DEX_IN_JAR_NAME = "classes.dex";
-
-    /** common prefix for all dex file "magic numbers" */
+    /**
+     * common prefix for all dex file "magic numbers"
+     */
     public static final String MAGIC_PREFIX = "dex\n";
-
-    /** common suffix for all dex file "magic numbers" */
+    /**
+     * common suffix for all dex file "magic numbers"
+     */
     public static final String MAGIC_SUFFIX = "\0";
-
     /**
      * value used to indicate endianness of file contents
      */
     public static final int ENDIAN_TAG = 0x12345678;
-
     /**
      * Maximum addressable field or method index.
      * The largest addressable member is 0xffff, in the "instruction formats" spec as field@CCCC or
      * meth@CCCC.
      */
     public static final int MAX_MEMBER_IDX = 0xFFFF;
-
     /**
      * Maximum addressable type index.
      * The largest addressable type is 0xffff, in the "instruction formats" spec as type@CCCC.
      */
     public static final int MAX_TYPE_IDX = 0xFFFF;
+
+    private DexFormat() {
+    }
 
     /**
      * Returns the API level corresponding to the given magic number,
@@ -117,7 +125,7 @@ public final class DexFormat {
             return -1;
         }
 
-        String version = "" + ((char) magic[4]) + ((char) magic[5]) +((char) magic[6]);
+        String version = "" + ((char) magic[4]) + ((char) magic[5]) + ((char) magic[6]);
 
         if (version.equals(VERSION_FOR_API_13)) {
             return API_NO_EXTENDED_OPCODES;
@@ -160,6 +168,7 @@ public final class DexFormat {
 
     /**
      * Checks whether a DEX file magic string is supported.
+     *
      * @param magic string from DEX file
      * @return
      */

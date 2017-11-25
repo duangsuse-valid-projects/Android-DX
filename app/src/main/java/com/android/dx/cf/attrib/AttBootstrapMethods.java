@@ -21,7 +21,9 @@ import com.android.dx.cf.code.BootstrapMethodsList;
  * Attribute class for standard {@code AttBootstrapMethods} attributes.
  */
 public class AttBootstrapMethods extends BaseAttribute {
-    /** {@code non-null;} attribute name for attributes of this type */
+    /**
+     * {@code non-null;} attribute name for attributes of this type
+     */
     public static final String ATTRIBUTE_NAME = "BootstrapMethods";
 
     private static final int ATTRIBUTE_HEADER_BYTES = 8;
@@ -51,6 +53,7 @@ public class AttBootstrapMethods extends BaseAttribute {
 
     /**
      * Get the bootstrap methods present in attribute.
+     *
      * @return bootstrap methods list
      */
     public BootstrapMethodsList getBootstrapMethods() {

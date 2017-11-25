@@ -24,10 +24,14 @@ import com.android.dx.util.ByteArrayAnnotatedOutput;
  */
 public final class CallSiteItem extends OffsettedItem {
 
-    /** {@code non-null;} the call site value */
+    /**
+     * {@code non-null;} the call site value
+     */
     private final CstCallSite value;
 
-    /** {@code null-ok;} the encoded representation of the call site value */
+    /**
+     * {@code null-ok;} the encoded representation of the call site value
+     */
     private byte[] encodedForm;
 
     /**
@@ -51,7 +55,9 @@ public final class CallSiteItem extends OffsettedItem {
         return -1;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void place0(Section addedTo, int offset) {
         // Encode the data and note the size.
@@ -64,19 +70,25 @@ public final class CallSiteItem extends OffsettedItem {
         setWriteSize(encodedForm.length);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toHuman() {
         return value.toHuman();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return value.toString();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void writeTo0(DexFile file, AnnotatedOutput out) {
         if (out.annotates()) {
@@ -88,7 +100,9 @@ public final class CallSiteItem extends OffsettedItem {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ItemType itemType() {
         // A call site is an encoded array with additional constraints
@@ -97,7 +111,9 @@ public final class CallSiteItem extends OffsettedItem {
         return ItemType.TYPE_ENCODED_ARRAY_ITEM;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addContents(DexFile file) {
         ValueEncoder.addContents(file, value);

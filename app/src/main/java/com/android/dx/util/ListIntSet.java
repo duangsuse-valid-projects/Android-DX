@@ -23,7 +23,9 @@ import java.util.NoSuchElementException;
  */
 public class ListIntSet implements IntSet {
 
-    /** also accessed in BitIntSet */
+    /**
+     * also accessed in BitIntSet
+     */
     final IntList ints;
 
     /**
@@ -34,7 +36,9 @@ public class ListIntSet implements IntSet {
         ints.sort();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void add(int value) {
         int index = ints.binarysearch(value);
@@ -44,7 +48,9 @@ public class ListIntSet implements IntSet {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void remove(int value) {
         int index = ints.indexOf(value);
@@ -54,13 +60,17 @@ public class ListIntSet implements IntSet {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean has(int value) {
         return ints.indexOf(value) >= 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void merge(IntSet other) {
         if (other instanceof ListIntSet) {
@@ -103,13 +113,17 @@ public class ListIntSet implements IntSet {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int elements() {
         return ints.size();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IntIterator iterator() {
         return new IntIterator() {
@@ -133,7 +147,9 @@ public class ListIntSet implements IntSet {
         };
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return ints.toString();

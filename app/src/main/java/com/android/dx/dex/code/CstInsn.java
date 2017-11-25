@@ -27,7 +27,9 @@ import com.android.dx.util.Hex;
  * to all the normal instruction information.
  */
 public final class CstInsn extends FixedSizeInsn {
-    /** {@code non-null;} the constant argument for this instruction */
+    /**
+     * {@code non-null;} the constant argument for this instruction
+     */
     private final Constant constant;
 
     /**
@@ -46,12 +48,12 @@ public final class CstInsn extends FixedSizeInsn {
      * Constructs an instance. The output address of this instance is
      * initially unknown ({@code -1}) as is the constant pool index.
      *
-     * @param opcode the opcode; one of the constants from {@link Dops}
-     * @param position {@code non-null;} source position
+     * @param opcode    the opcode; one of the constants from {@link Dops}
+     * @param position  {@code non-null;} source position
      * @param registers {@code non-null;} register list, including a
-     * result register if appropriate (that is, registers may be either
-     * ins or outs)
-     * @param constant {@code non-null;} constant argument
+     *                  result register if appropriate (that is, registers may be either
+     *                  ins or outs)
+     * @param constant  {@code non-null;} constant argument
      */
     public CstInsn(Dop opcode, SourcePosition position,
                    RegisterSpecList registers, Constant constant) {
@@ -66,11 +68,13 @@ public final class CstInsn extends FixedSizeInsn {
         this.classIndex = -1;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DalvInsn withOpcode(Dop opcode) {
         CstInsn result =
-            new CstInsn(opcode, getPosition(), getRegisters(), constant);
+                new CstInsn(opcode, getPosition(), getRegisters(), constant);
 
         if (index >= 0) {
             result.setIndex(index);
@@ -83,11 +87,13 @@ public final class CstInsn extends FixedSizeInsn {
         return result;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DalvInsn withRegisters(RegisterSpecList registers) {
         CstInsn result =
-            new CstInsn(getOpcode(), getPosition(), registers, constant);
+                new CstInsn(getOpcode(), getPosition(), registers, constant);
 
         if (index >= 0) {
             result.setIndex(index);
@@ -124,17 +130,6 @@ public final class CstInsn extends FixedSizeInsn {
     }
 
     /**
-     * Returns whether the constant's index has been set for this instance.
-     *
-     * @see #setIndex
-     *
-     * @return {@code true} iff the index has been set
-     */
-    public boolean hasIndex() {
-        return (index >= 0);
-    }
-
-    /**
      * Sets the constant's index. It is only valid to call this method once
      * per instance.
      *
@@ -153,6 +148,16 @@ public final class CstInsn extends FixedSizeInsn {
     }
 
     /**
+     * Returns whether the constant's index has been set for this instance.
+     *
+     * @return {@code true} iff the index has been set
+     * @see #setIndex
+     */
+    public boolean hasIndex() {
+        return (index >= 0);
+    }
+
+    /**
      * Gets the constant's class index. It is only valid to call this after
      * {@link #setClassIndex} has been called.
      *
@@ -164,18 +169,6 @@ public final class CstInsn extends FixedSizeInsn {
         }
 
         return classIndex;
-    }
-
-    /**
-     * Returns whether the constant's class index has been set for this
-     * instance.
-     *
-     * @see #setClassIndex
-     *
-     * @return {@code true} iff the index has been set
-     */
-    public boolean hasClassIndex() {
-        return (classIndex >= 0);
     }
 
     /**
@@ -199,13 +192,28 @@ public final class CstInsn extends FixedSizeInsn {
         this.classIndex = index;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Returns whether the constant's class index has been set for this
+     * instance.
+     *
+     * @return {@code true} iff the index has been set
+     * @see #setClassIndex
+     */
+    public boolean hasClassIndex() {
+        return (classIndex >= 0);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String argString() {
         return constant.toHuman();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String cstString() {
         if (constant instanceof CstString) {
@@ -214,7 +222,9 @@ public final class CstInsn extends FixedSizeInsn {
         return constant.toHuman();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String cstComment() {
         if (!hasIndex()) {

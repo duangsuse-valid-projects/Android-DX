@@ -23,6 +23,16 @@ import com.android.dx.rop.type.Type;
  */
 public final class CstFieldRef extends CstMemberRef {
     /**
+     * Constructs an instance.
+     *
+     * @param definingClass {@code non-null;} the type of the defining class
+     * @param nat           {@code non-null;} the name-and-type
+     */
+    public CstFieldRef(CstType definingClass, CstNat nat) {
+        super(definingClass, nat);
+    }
+
+    /**
      * Returns an instance of this class that represents the static
      * field which should hold the class corresponding to a given
      * primitive type. For example, if given {@link Type#INT}, this
@@ -38,16 +48,8 @@ public final class CstFieldRef extends CstMemberRef {
     }
 
     /**
-     * Constructs an instance.
-     *
-     * @param definingClass {@code non-null;} the type of the defining class
-     * @param nat {@code non-null;} the name-and-type
+     * {@inheritDoc}
      */
-    public CstFieldRef(CstType definingClass, CstNat nat) {
-        super(definingClass, nat);
-    }
-
-    /** {@inheritDoc} */
     @Override
     public String typeName() {
         return "field";
@@ -63,7 +65,9 @@ public final class CstFieldRef extends CstMemberRef {
         return getNat().getFieldType();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected int compareTo0(Constant other) {
         int cmp = super.compareTo0(other);

@@ -69,7 +69,7 @@ public final class Leb128 {
         }
 
         // Sign extend if appropriate
-        if (((signBits >> 1) & result) != 0 ) {
+        if (((signBits >> 1) & result) != 0) {
             result |= signBits;
         }
 

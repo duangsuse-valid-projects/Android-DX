@@ -23,11 +23,12 @@ import com.android.dx.rop.type.Prototype;
 import com.android.dx.rop.type.StdTypeList;
 import com.android.dx.rop.type.Type;
 import com.android.dx.rop.type.TypeBearer;
+
 import java.util.ArrayList;
 
 /**
  * Base implementation of {@link Machine}.
- *
+ * <p>
  * <p><b>Note:</b> For the most part, the documentation for this class
  * ignores the distinction between {@link Type} and {@link
  * TypeBearer}.</p>
@@ -36,40 +37,64 @@ public abstract class BaseMachine implements Machine {
     /* {@code non-null;} the prototype for the associated method */
     private final Prototype prototype;
 
-    /** {@code non-null;} primary arguments */
+    /**
+     * {@code non-null;} primary arguments
+     */
     private TypeBearer[] args;
 
-    /** {@code >= 0;} number of primary arguments */
+    /**
+     * {@code >= 0;} number of primary arguments
+     */
     private int argCount;
 
-    /** {@code null-ok;} type of the operation, if salient */
+    /**
+     * {@code null-ok;} type of the operation, if salient
+     */
     private Type auxType;
 
-    /** auxiliary {@code int} argument */
+    /**
+     * auxiliary {@code int} argument
+     */
     private int auxInt;
 
-    /** {@code null-ok;} auxiliary constant argument */
+    /**
+     * {@code null-ok;} auxiliary constant argument
+     */
     private Constant auxCst;
 
-    /** auxiliary branch target argument */
+    /**
+     * auxiliary branch target argument
+     */
     private int auxTarget;
 
-    /** {@code null-ok;} auxiliary switch cases argument */
+    /**
+     * {@code null-ok;} auxiliary switch cases argument
+     */
     private SwitchList auxCases;
 
-    /** {@code null-ok;} auxiliary initial value list for newarray */
+    /**
+     * {@code null-ok;} auxiliary initial value list for newarray
+     */
     private ArrayList<Constant> auxInitValues;
 
-    /** {@code >= -1;} last local accessed */
+    /**
+     * {@code >= -1;} last local accessed
+     */
     private int localIndex;
 
-    /** specifies if local has info in the local variable table */
+    /**
+     * specifies if local has info in the local variable table
+     */
     private boolean localInfo;
 
-    /** {@code null-ok;} local target spec, if salient and calculated */
+    /**
+     * {@code null-ok;} local target spec, if salient and calculated
+     */
     private RegisterSpec localTarget;
 
-    /** {@code non-null;} results */
+    /**
+     * {@code non-null;} results
+     */
     private TypeBearer[] results;
 
     /**
@@ -82,7 +107,7 @@ public abstract class BaseMachine implements Machine {
      * Constructs an instance.
      *
      * @param prototype {@code non-null;} the prototype for the
-     * associated method
+     *                  associated method
      */
     public BaseMachine(Prototype prototype) {
         if (prototype == null) {
@@ -95,13 +120,35 @@ public abstract class BaseMachine implements Machine {
         clearArgs();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Throws an exception that indicates a mismatch in local variable
+     * types.
+     *
+     * @param found {@code non-null;} the encountered type
+     * @param local {@code non-null;} the local variable's claimed type
+     */
+    public static void throwLocalMismatch(TypeBearer found,
+                                          TypeBearer local) {
+        throw new SimException("local variable type mismatch: " +
+                "attempt to set or access a value of type " +
+                found.toHuman() +
+                " using a local variable of type " +
+                local.toHuman() +
+                ". This is symptomatic of .class transformation tools " +
+                "that ignore local variable information.");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Prototype getPrototype() {
         return prototype;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void clearArgs() {
         argCount = 0;
@@ -117,7 +164,9 @@ public abstract class BaseMachine implements Machine {
         resultCount = -1;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void popArgs(Frame frame, int count) {
         ExecutionStack stack = frame.getStack();
@@ -136,7 +185,9 @@ public abstract class BaseMachine implements Machine {
         argCount = count;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void popArgs(Frame frame, Prototype prototype) {
         StdTypeList types = prototype.getParameterTypes();
@@ -148,7 +199,7 @@ public abstract class BaseMachine implements Machine {
         // ...and then verify the popped types.
 
         for (int i = 0; i < size; i++) {
-            if (! Merger.isPossiblyAssignableFrom(types.getType(i), args[i])) {
+            if (!Merger.isPossiblyAssignableFrom(types.getType(i), args[i])) {
                 throw new SimException("at stack depth " + (size - 1 - i) +
                         ", expected type " + types.getType(i).toHuman() +
                         " but found " + args[i].getType().toHuman());
@@ -162,13 +213,15 @@ public abstract class BaseMachine implements Machine {
         popArgs(frame, 1);
 
         // ...and then verify the popped type.
-        if (! Merger.isPossiblyAssignableFrom(type, args[0])) {
+        if (!Merger.isPossiblyAssignableFrom(type, args[0])) {
             throw new SimException("expected type " + type.toHuman() +
                     " but found " + args[0].getType().toHuman());
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void popArgs(Frame frame, Type type1, Type type2) {
         // Use the above method to do the actual popping...
@@ -176,43 +229,47 @@ public abstract class BaseMachine implements Machine {
 
         // ...and then verify the popped types.
 
-        if (! Merger.isPossiblyAssignableFrom(type1, args[0])) {
+        if (!Merger.isPossiblyAssignableFrom(type1, args[0])) {
             throw new SimException("expected type " + type1.toHuman() +
                     " but found " + args[0].getType().toHuman());
         }
 
-        if (! Merger.isPossiblyAssignableFrom(type2, args[1])) {
+        if (!Merger.isPossiblyAssignableFrom(type2, args[1])) {
             throw new SimException("expected type " + type2.toHuman() +
                     " but found " + args[1].getType().toHuman());
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void popArgs(Frame frame, Type type1, Type type2,
-            Type type3) {
+                              Type type3) {
         // Use the above method to do the actual popping...
         popArgs(frame, 3);
 
         // ...and then verify the popped types.
 
-        if (! Merger.isPossiblyAssignableFrom(type1, args[0])) {
+        if (!Merger.isPossiblyAssignableFrom(type1, args[0])) {
             throw new SimException("expected type " + type1.toHuman() +
                     " but found " + args[0].getType().toHuman());
         }
 
-        if (! Merger.isPossiblyAssignableFrom(type2, args[1])) {
+        if (!Merger.isPossiblyAssignableFrom(type2, args[1])) {
             throw new SimException("expected type " + type2.toHuman() +
                     " but found " + args[1].getType().toHuman());
         }
 
-        if (! Merger.isPossiblyAssignableFrom(type3, args[2])) {
+        if (!Merger.isPossiblyAssignableFrom(type3, args[2])) {
             throw new SimException("expected type " + type3.toHuman() +
                     " but found " + args[2].getType().toHuman());
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void localArg(Frame frame, int idx) {
         clearArgs();
@@ -221,25 +278,33 @@ public abstract class BaseMachine implements Machine {
         localIndex = idx;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void localInfo(boolean local) {
         localInfo = local;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void auxType(Type type) {
         auxType = type;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void auxIntArg(int value) {
         auxInt = value;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void auxCstArg(Constant cst) {
         if (cst == null) {
@@ -249,13 +314,17 @@ public abstract class BaseMachine implements Machine {
         auxCst = cst;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void auxTargetArg(int target) {
         auxTarget = target;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void auxSwitchArg(SwitchList cases) {
         if (cases == null) {
@@ -265,13 +334,17 @@ public abstract class BaseMachine implements Machine {
         auxCases = cases;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void auxInitValues(ArrayList<Constant> initValues) {
         auxInitValues = initValues;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void localTarget(int idx, Type type, LocalItem local) {
         localTarget = RegisterSpec.makeLocalOptional(idx, type, local);
@@ -374,6 +447,7 @@ public abstract class BaseMachine implements Machine {
     protected final ArrayList<Constant> getInitValues() {
         return auxInitValues;
     }
+
     /**
      * Gets the last local index accessed.
      *
@@ -401,8 +475,8 @@ public abstract class BaseMachine implements Machine {
      * the combination {@link #clearResult} then {@link #addResult}.
      *
      * @param isMove {@code true} if the operation being performed on the
-     * local is a move. This will cause constant values to be propagated
-     * to the returned local
+     *               local is a move. This will cause constant values to be propagated
+     *               to the returned local
      * @return {@code null-ok;} the salient register spec or {@code null} if no
      * local target was set since the last time {@link #clearArgs} was
      * called
@@ -434,7 +508,7 @@ public abstract class BaseMachine implements Machine {
             }
         }
 
-        if (! Merger.isPossiblyAssignableFrom(localType, resultType)) {
+        if (!Merger.isPossiblyAssignableFrom(localType, resultType)) {
             // The result and local types are inconsistent. Complain!
             throwLocalMismatch(resultType, localType);
             return null;
@@ -460,7 +534,7 @@ public abstract class BaseMachine implements Machine {
 
     /**
      * Sets the results list to be the given single value.
-     *
+     * <p>
      * <p><b>Note:</b> If there is more than one result value, the
      * others may be added by using {@link #addResult}.</p>
      *
@@ -478,9 +552,8 @@ public abstract class BaseMachine implements Machine {
     /**
      * Adds an additional element to the list of results.
      *
-     * @see #setResult
-     *
      * @param result {@code non-null;} result value
+     * @see #setResult
      */
     protected final void addResult(TypeBearer result) {
         if (result == null) {
@@ -573,23 +646,5 @@ public abstract class BaseMachine implements Machine {
                 stack.push(results[i]);
             }
         }
-    }
-
-    /**
-     * Throws an exception that indicates a mismatch in local variable
-     * types.
-     *
-     * @param found {@code non-null;} the encountered type
-     * @param local {@code non-null;} the local variable's claimed type
-     */
-    public static void throwLocalMismatch(TypeBearer found,
-            TypeBearer local) {
-        throw new SimException("local variable type mismatch: " +
-                "attempt to set or access a value of type " +
-                found.toHuman() +
-                " using a local variable of type " +
-                local.toHuman() +
-                ". This is symptomatic of .class transformation tools " +
-                "that ignore local variable information.");
     }
 }

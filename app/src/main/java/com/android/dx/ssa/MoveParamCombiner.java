@@ -21,6 +21,7 @@ import com.android.dx.rop.code.LocalItem;
 import com.android.dx.rop.code.RegOps;
 import com.android.dx.rop.code.RegisterSpec;
 import com.android.dx.rop.cst.CstInteger;
+
 import java.util.HashSet;
 import java.util.List;
 
@@ -30,8 +31,14 @@ import java.util.List;
  */
 public class MoveParamCombiner {
 
-    /** method to process */
+    /**
+     * method to process
+     */
     private final SsaMethod ssaMeth;
+
+    private MoveParamCombiner(SsaMethod ssaMeth) {
+        this.ssaMeth = ssaMeth;
+    }
 
     /**
      * Processes a method with this optimization step.
@@ -40,10 +47,6 @@ public class MoveParamCombiner {
      */
     public static void process(SsaMethod ssaMethod) {
         new MoveParamCombiner(ssaMethod).run();
-    }
-
-    private MoveParamCombiner(SsaMethod ssaMeth) {
-        this.ssaMeth = ssaMeth;
     }
 
     /**
@@ -59,13 +62,15 @@ public class MoveParamCombiner {
 
         ssaMeth.forEachInsn(new SsaInsn.Visitor() {
             @Override
-            public void visitMoveInsn (NormalSsaInsn insn) {
+            public void visitMoveInsn(NormalSsaInsn insn) {
             }
+
             @Override
-            public void visitPhiInsn (PhiInsn phi) {
+            public void visitPhiInsn(PhiInsn phi) {
             }
+
             @Override
-            public void visitNonMoveInsn (NormalSsaInsn insn) {
+            public void visitNonMoveInsn(NormalSsaInsn insn) {
                 if (insn.getOpcode().getOpcode() != RegOps.MOVE_PARAM) {
                     return;
                 }
@@ -150,9 +155,9 @@ public class MoveParamCombiner {
      * @return {@code >=0;} parameter index
      */
     private int getParamIndex(NormalSsaInsn insn) {
-        CstInsn cstInsn = (CstInsn)(insn.getOriginalRopInsn());
+        CstInsn cstInsn = (CstInsn) (insn.getOriginalRopInsn());
 
-        int param = ((CstInteger)cstInsn.getConstant()).getValue();
+        int param = ((CstInteger) cstInsn.getConstant()).getValue();
         return param;
     }
 

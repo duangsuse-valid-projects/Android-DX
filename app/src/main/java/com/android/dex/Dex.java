@@ -22,6 +22,7 @@ import com.android.dex.MethodHandle.MethodHandleType;
 import com.android.dex.util.ByteInput;
 import com.android.dex.util.ByteOutput;
 import com.android.dex.util.FileUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -49,23 +50,22 @@ import java.util.zip.ZipFile;
  * are unsigned.
  */
 public final class Dex {
+    // Provided as a convenience to avoid a memory allocation to benefit Dalvik.
+    // Note: libcore.util.EmptyArray cannot be accessed when this code isn't run on Dalvik.
+    static final short[] EMPTY_SHORT_ARRAY = new short[0];
     private static final int CHECKSUM_OFFSET = 8;
     private static final int CHECKSUM_SIZE = 4;
     private static final int SIGNATURE_OFFSET = CHECKSUM_OFFSET + CHECKSUM_SIZE;
     private static final int SIGNATURE_SIZE = 20;
-    // Provided as a convenience to avoid a memory allocation to benefit Dalvik.
-    // Note: libcore.util.EmptyArray cannot be accessed when this code isn't run on Dalvik.
-    static final short[] EMPTY_SHORT_ARRAY = new short[0];
-
-    private ByteBuffer data;
     private final TableOfContents tableOfContents = new TableOfContents();
-    private int nextSectionStart = 0;
     private final StringTable strings = new StringTable();
     private final TypeIndexToDescriptorIndexTable typeIds = new TypeIndexToDescriptorIndexTable();
     private final TypeIndexToDescriptorTable typeNames = new TypeIndexToDescriptorTable();
     private final ProtoIdTable protoIds = new ProtoIdTable();
     private final FieldIdTable fieldIds = new FieldIdTable();
     private final MethodIdTable methodIds = new MethodIdTable();
+    private ByteBuffer data;
+    private int nextSectionStart = 0;
 
     /**
      * Creates a new dex that reads from {@code data}. It is an error to modify
@@ -124,6 +124,12 @@ public final class Dex {
         }
     }
 
+    private static void checkBounds(int index, int length) {
+        if (index < 0 || index >= length) {
+            throw new IndexOutOfBoundsException("index:" + index + ", length=" + length);
+        }
+    }
+
     /**
      * It is the caller's responsibility to close {@code in}.
      */
@@ -139,12 +145,6 @@ public final class Dex {
         this.data = ByteBuffer.wrap(bytesOut.toByteArray());
         this.data.order(ByteOrder.LITTLE_ENDIAN);
         this.tableOfContents.readFrom(this);
-    }
-
-    private static void checkBounds(int index, int length) {
-        if (index < 0 || index >= length) {
-            throw new IndexOutOfBoundsException("index:" + index + ", length=" + length);
-        }
     }
 
     public void writeTo(OutputStream out) throws IOException {
@@ -319,9 +319,9 @@ public final class Dex {
      * {@code open(tableOfContents.typeIds.off + (index * SizeOf.TYPE_ID_ITEM)).readInt();}
      */
     public int descriptorIndexFromTypeIndex(int typeIndex) {
-       checkBounds(typeIndex, tableOfContents.typeIds.size);
-       int position = tableOfContents.typeIds.off + (SizeOf.TYPE_ID_ITEM * typeIndex);
-       return data.getInt(position);
+        checkBounds(typeIndex, tableOfContents.typeIds.size);
+        int position = tableOfContents.typeIds.off + (SizeOf.TYPE_ID_ITEM * typeIndex);
+        return data.getInt(position);
     }
 
 
@@ -497,7 +497,7 @@ public final class Dex {
                 catchHandlers = new CatchHandler[0];
             }
             return new Code(registersSize, insSize, outsSize, debugInfoOffset, instructions,
-                            tries, catchHandlers);
+                    tries, catchHandlers);
         }
 
         private CatchHandler[] readCatchHandlers() {
@@ -717,6 +717,7 @@ public final class Dex {
             return open(tableOfContents.stringIds.off + (index * SizeOf.STRING_ID_ITEM))
                     .readString();
         }
+
         @Override
         public int size() {
             return tableOfContents.stringIds.size;
@@ -729,6 +730,7 @@ public final class Dex {
         public Integer get(int index) {
             return descriptorIndexFromTypeIndex(index);
         }
+
         @Override
         public int size() {
             return tableOfContents.typeIds.size;
@@ -741,6 +743,7 @@ public final class Dex {
         public String get(int index) {
             return strings.get(descriptorIndexFromTypeIndex(index));
         }
+
         @Override
         public int size() {
             return tableOfContents.typeIds.size;
@@ -754,6 +757,7 @@ public final class Dex {
             return open(tableOfContents.protoIds.off + (SizeOf.PROTO_ID_ITEM * index))
                     .readProtoId();
         }
+
         @Override
         public int size() {
             return tableOfContents.protoIds.size;
@@ -767,6 +771,7 @@ public final class Dex {
             return open(tableOfContents.fieldIds.off + (SizeOf.MEMBER_ID_ITEM * index))
                     .readFieldId();
         }
+
         @Override
         public int size() {
             return tableOfContents.fieldIds.size;
@@ -780,6 +785,7 @@ public final class Dex {
             return open(tableOfContents.methodIds.off + (SizeOf.MEMBER_ID_ITEM * index))
                     .readMethodId();
         }
+
         @Override
         public int size() {
             return tableOfContents.methodIds.size;
@@ -794,6 +800,7 @@ public final class Dex {
         public boolean hasNext() {
             return count < tableOfContents.classDefs.size;
         }
+
         @Override
         public ClassDef next() {
             if (!hasNext()) {
@@ -802,8 +809,9 @@ public final class Dex {
             count++;
             return in.readClassDef();
         }
+
         @Override
-            public void remove() {
+        public void remove() {
             throw new UnsupportedOperationException();
         }
     }
@@ -812,8 +820,8 @@ public final class Dex {
         @Override
         public Iterator<ClassDef> iterator() {
             return !tableOfContents.classDefs.exists()
-               ? Collections.<ClassDef>emptySet().iterator()
-               : new ClassDefIterator();
+                    ? Collections.<ClassDef>emptySet().iterator()
+                    : new ClassDefIterator();
         }
     }
 }

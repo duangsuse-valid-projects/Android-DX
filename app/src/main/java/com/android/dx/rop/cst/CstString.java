@@ -30,11 +30,43 @@ public final class CstString extends TypedConstant {
      */
     public static final CstString EMPTY_STRING = new CstString("");
 
-    /** {@code non-null;} the UTF-8 value as a string */
+    /**
+     * {@code non-null;} the UTF-8 value as a string
+     */
     private final String string;
 
-    /** {@code non-null;} the UTF-8 value as bytes */
+    /**
+     * {@code non-null;} the UTF-8 value as bytes
+     */
     private final ByteArray bytes;
+
+    /**
+     * Constructs an instance from a {@code String}.
+     *
+     * @param string {@code non-null;} the UTF-8 value as a string
+     */
+    public CstString(String string) {
+        if (string == null) {
+            throw new NullPointerException("string == null");
+        }
+
+        this.string = string.intern();
+        this.bytes = new ByteArray(stringToUtf8Bytes(string));
+    }
+
+    /**
+     * Constructs an instance from some UTF-8 bytes.
+     *
+     * @param bytes {@code non-null;} array of the UTF-8 bytes
+     */
+    public CstString(ByteArray bytes) {
+        if (bytes == null) {
+            throw new NullPointerException("bytes == null");
+        }
+
+        this.bytes = bytes;
+        this.string = utf8BytesToString(bytes).intern();
+    }
 
     /**
      * Converts a string into its MUTF-8 form. MUTF-8 differs from normal UTF-8
@@ -85,8 +117,14 @@ public final class CstString extends TypedConstant {
             int v0 = bytes.getUnsignedByte(at);
             char out;
             switch (v0 >> 4) {
-                case 0x00: case 0x01: case 0x02: case 0x03:
-                case 0x04: case 0x05: case 0x06: case 0x07: {
+                case 0x00:
+                case 0x01:
+                case 0x02:
+                case 0x03:
+                case 0x04:
+                case 0x05:
+                case 0x06:
+                case 0x07: {
                     // 0XXXXXXX -- single-byte encoding
                     length--;
                     if (v0 == 0) {
@@ -97,7 +135,8 @@ public final class CstString extends TypedConstant {
                     at++;
                     break;
                 }
-                case 0x0c: case 0x0d: {
+                case 0x0c:
+                case 0x0d: {
                     // 110XXXXX -- two-byte encoding
                     length -= 2;
                     if (length < 0) {
@@ -134,7 +173,7 @@ public final class CstString extends TypedConstant {
                         return throwBadUtf8(v2, at + 2);
                     }
                     int value = ((v0 & 0x0f) << 12) | ((v1 & 0x3f) << 6) |
-                        (v2 & 0x3f);
+                            (v2 & 0x3f);
                     if (value < 0x800) {
                         /*
                          * This should have been represented with one- or
@@ -162,45 +201,19 @@ public final class CstString extends TypedConstant {
      * Helper for {@link #utf8BytesToString}, which throws the right
      * exception for a bogus utf-8 byte.
      *
-     * @param value the byte value
+     * @param value  the byte value
      * @param offset the file offset
      * @return never
      * @throws IllegalArgumentException always thrown
      */
     private static String throwBadUtf8(int value, int offset) {
         throw new IllegalArgumentException("bad utf-8 byte " + Hex.u1(value) +
-                                           " at offset " + Hex.u4(offset));
+                " at offset " + Hex.u4(offset));
     }
 
     /**
-     * Constructs an instance from a {@code String}.
-     *
-     * @param string {@code non-null;} the UTF-8 value as a string
+     * {@inheritDoc}
      */
-    public CstString(String string) {
-        if (string == null) {
-            throw new NullPointerException("string == null");
-        }
-
-        this.string = string.intern();
-        this.bytes = new ByteArray(stringToUtf8Bytes(string));
-    }
-
-    /**
-     * Constructs an instance from some UTF-8 bytes.
-     *
-     * @param bytes {@code non-null;} array of the UTF-8 bytes
-     */
-    public CstString(ByteArray bytes) {
-        if (bytes == null) {
-            throw new NullPointerException("bytes == null");
-        }
-
-        this.bytes = bytes;
-        this.string = utf8BytesToString(bytes).intern();
-    }
-
-    /** {@inheritDoc} */
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof CstString)) {
@@ -210,37 +223,49 @@ public final class CstString extends TypedConstant {
         return string.equals(((CstString) other).string);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return string.hashCode();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected int compareTo0(Constant other) {
         return string.compareTo(((CstString) other).string);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return "string{\"" + toHuman() + "\"}";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "utf8";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isCategory2() {
         return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toHuman() {
         int len = string.length();
@@ -255,9 +280,15 @@ public final class CstString extends TypedConstant {
                 sb.append(c);
             } else if (c <= 0x7f) {
                 switch (c) {
-                    case '\n': sb.append("\\n"); break;
-                    case '\r': sb.append("\\r"); break;
-                    case '\t': sb.append("\\t"); break;
+                    case '\n':
+                        sb.append("\\n");
+                        break;
+                    case '\r':
+                        sb.append("\\r");
+                        break;
+                    case '\t':
+                        sb.append("\\t");
+                        break;
                     default: {
                         /*
                          * Represent the character as an octal escape.
@@ -266,9 +297,9 @@ public final class CstString extends TypedConstant {
                          * three-digit form.
                          */
                         char nextChar =
-                            (i < (len - 1)) ? string.charAt(i + 1) : 0;
+                                (i < (len - 1)) ? string.charAt(i + 1) : 0;
                         boolean displayZero =
-                            (nextChar >= '0') && (nextChar <= '7');
+                                (nextChar >= '0') && (nextChar <= '7');
                         sb.append('\\');
                         for (int shift = 6; shift >= 0; shift -= 3) {
                             char outChar = (char) (((c >> shift) & 7) + '0');
@@ -277,7 +308,7 @@ public final class CstString extends TypedConstant {
                                 displayZero = true;
                             }
                         }
-                        if (! displayZero) {
+                        if (!displayZero) {
                             // Ironic edge case: The original value was 0.
                             sb.append('0');
                         }

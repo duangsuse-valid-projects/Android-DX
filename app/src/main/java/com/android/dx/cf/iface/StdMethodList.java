@@ -32,7 +32,9 @@ public final class StdMethodList extends FixedSizeList implements MethodList {
         super(size);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Method get(int n) {
         return (Method) get0(n);
@@ -41,7 +43,7 @@ public final class StdMethodList extends FixedSizeList implements MethodList {
     /**
      * Sets the method at the given index.
      *
-     * @param n {@code >= 0, < size();} which method
+     * @param n      {@code >= 0, < size();} which method
      * @param method {@code null-ok;} the method object
      */
     public void set(int n, Method method) {

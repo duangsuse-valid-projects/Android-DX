@@ -22,10 +22,14 @@ import com.android.dx.util.MutabilityException;
  * Attribute class for standard {@code InnerClasses} attributes.
  */
 public final class AttInnerClasses extends BaseAttribute {
-    /** {@code non-null;} attribute name for attributes of this type */
+    /**
+     * {@code non-null;} attribute name for attributes of this type
+     */
     public static final String ATTRIBUTE_NAME = "InnerClasses";
 
-    /** {@code non-null;} list of inner class entries */
+    /**
+     * {@code non-null;} list of inner class entries
+     */
     private final InnerClassList innerClasses;
 
     /**
@@ -48,7 +52,9 @@ public final class AttInnerClasses extends BaseAttribute {
         this.innerClasses = innerClasses;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int byteLength() {
         return 8 + innerClasses.size() * 8;

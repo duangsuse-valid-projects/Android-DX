@@ -22,20 +22,52 @@ import java.util.Arrays;
  * Simple list of {@code int}s.
  */
 public final class IntList extends MutabilityControl {
-    /** {@code non-null;} immutable, no-element instance */
+    /**
+     * {@code non-null;} immutable, no-element instance
+     */
     public static final IntList EMPTY = new IntList(0);
-
-    /** {@code non-null;} array of elements */
-    private int[] values;
-
-    /** {@code >= 0;} current size of the list */
-    private int size;
-
-    /** whether the values are currently sorted */
-    private boolean sorted;
 
     static {
         EMPTY.setImmutable();
+    }
+
+    /**
+     * {@code non-null;} array of elements
+     */
+    private int[] values;
+    /**
+     * {@code >= 0;} current size of the list
+     */
+    private int size;
+    /**
+     * whether the values are currently sorted
+     */
+    private boolean sorted;
+
+    /**
+     * Constructs an empty instance with a default initial capacity.
+     */
+    public IntList() {
+        this(4);
+    }
+
+    /**
+     * Constructs an empty instance.
+     *
+     * @param initialCapacity {@code >= 0;} initial capacity of the list
+     */
+    public IntList(int initialCapacity) {
+        super(true);
+
+        try {
+            values = new int[initialCapacity];
+        } catch (NegativeArraySizeException ex) {
+            // Translate the exception.
+            throw new IllegalArgumentException("size < 0");
+        }
+
+        size = 0;
+        sorted = true;
     }
 
     /**
@@ -69,32 +101,8 @@ public final class IntList extends MutabilityControl {
     }
 
     /**
-     * Constructs an empty instance with a default initial capacity.
+     * {@inheritDoc}
      */
-    public IntList() {
-        this(4);
-    }
-
-    /**
-     * Constructs an empty instance.
-     *
-     * @param initialCapacity {@code >= 0;} initial capacity of the list
-     */
-    public IntList(int initialCapacity) {
-        super(true);
-
-        try {
-            values = new int[initialCapacity];
-        } catch (NegativeArraySizeException ex) {
-            // Translate the exception.
-            throw new IllegalArgumentException("size < 0");
-        }
-
-        size = 0;
-        sorted = true;
-    }
-
-    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         int result = 0;
@@ -106,14 +114,16 @@ public final class IntList extends MutabilityControl {
         return result;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object other) {
         if (other == this) {
             return true;
         }
 
-        if (! (other instanceof IntList)) {
+        if (!(other instanceof IntList)) {
             return false;
         }
 
@@ -136,7 +146,9 @@ public final class IntList extends MutabilityControl {
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(size * 5 + 10);
@@ -184,7 +196,7 @@ public final class IntList extends MutabilityControl {
     /**
      * Sets the value at the given index.
      *
-     * @param n {@code >= 0, < size();} which element
+     * @param n     {@code >= 0, < size();} which element
      * @param value value to store
      */
     public void set(int n, int value) {
@@ -229,7 +241,7 @@ public final class IntList extends MutabilityControl {
      * current size (that is, insertion as a last element is legal but
      * no further).
      *
-     * @param n {@code >= 0, <=size();} index of where to insert
+     * @param n     {@code >= 0, <=size();} index of where to insert
      * @param value value to insert
      */
     public void insert(int n, int value) {
@@ -239,27 +251,27 @@ public final class IntList extends MutabilityControl {
 
         growIfNeeded();
 
-        System.arraycopy (values, n, values, n+1, size - n);
+        System.arraycopy(values, n, values, n + 1, size - n);
         values[n] = value;
         size++;
 
         sorted = sorted
-                && (n == 0 || value > values[n-1])
-                && (n == (size - 1) || value < values[n+1]);
+                && (n == 0 || value > values[n - 1])
+                && (n == (size - 1) || value < values[n + 1]);
     }
 
     /**
      * Removes an element at a given index, shifting elements at greater
      * indicies down one.
      *
-     * @param n  {@code >=0, < size();} index of element to remove
+     * @param n {@code >=0, < size();} index of element to remove
      */
     public void removeIndex(int n) {
         if (n >= size) {
             throw new IndexOutOfBoundsException("n >= size()");
         }
 
-        System.arraycopy (values, n + 1, values, n, size - n - 1);
+        System.arraycopy(values, n + 1, values, n, size - n - 1);
         size--;
 
         // sort status is unchanged
@@ -298,7 +310,7 @@ public final class IntList extends MutabilityControl {
 
         int result;
 
-        result = get(size-1);
+        result = get(size - 1);
         size--;
 
         return result;
@@ -442,10 +454,9 @@ public final class IntList extends MutabilityControl {
      * This will do a binary search if the list is sorted or a linear
      * search if not.
      *
-     * @see #sort
-     *
      * @param value value to look for
      * @return whether the list contains the given value
+     * @see #sort
      */
     public boolean contains(int value) {
         return indexOf(value) >= 0;

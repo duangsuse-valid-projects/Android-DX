@@ -22,21 +22,27 @@ import com.android.dx.io.IndexType;
  * A decoded Dalvik instruction which has three register arguments.
  */
 public final class ThreeRegisterDecodedInstruction extends DecodedInstruction {
-    /** register argument "A" */
+    /**
+     * register argument "A"
+     */
     private final int a;
 
-    /** register argument "B" */
+    /**
+     * register argument "B"
+     */
     private final int b;
 
-    /** register argument "C" */
+    /**
+     * register argument "C"
+     */
     private final int c;
 
     /**
      * Constructs an instance.
      */
     public ThreeRegisterDecodedInstruction(InstructionCodec format, int opcode,
-            int index, IndexType indexType, int target, long literal,
-            int a, int b, int c) {
+                                           int index, IndexType indexType, int target, long literal,
+                                           int a, int b, int c) {
         super(format, opcode, index, indexType, target, literal);
 
         this.a = a;
@@ -44,31 +50,41 @@ public final class ThreeRegisterDecodedInstruction extends DecodedInstruction {
         this.c = c;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getRegisterCount() {
         return 3;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getA() {
         return a;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getB() {
         return b;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getC() {
         return c;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DecodedInstruction withIndex(int newIndex) {
         return new ThreeRegisterDecodedInstruction(

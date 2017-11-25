@@ -19,6 +19,7 @@ package com.android.dx.merge;
 import com.android.dex.ClassDef;
 import com.android.dex.Dex;
 import com.android.dex.DexException;
+
 import java.util.Comparator;
 
 /**

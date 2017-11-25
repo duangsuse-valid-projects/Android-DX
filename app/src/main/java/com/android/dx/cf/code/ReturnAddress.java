@@ -28,14 +28,16 @@ import com.android.dx.util.Hex;
  * what instances of this class hang onto.
  */
 public final class ReturnAddress implements TypeBearer {
-    /** {@code >= 0;} the start address of the subroutine being returned from */
+    /**
+     * {@code >= 0;} the start address of the subroutine being returned from
+     */
     private final int subroutineAddress;
 
     /**
      * Constructs an instance.
      *
      * @param subroutineAddress {@code >= 0;} the start address of the
-     * subroutine being returned from
+     *                          subroutine being returned from
      */
     public ReturnAddress(int subroutineAddress) {
         if (subroutineAddress < 0) {
@@ -45,49 +47,65 @@ public final class ReturnAddress implements TypeBearer {
         this.subroutineAddress = subroutineAddress;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return ("<addr:" + Hex.u2(subroutineAddress) + ">");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toHuman() {
         return toString();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Type getType() {
         return Type.RETURN_ADDRESS;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public TypeBearer getFrameType() {
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getBasicType() {
         return Type.RETURN_ADDRESS.getBasicType();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getBasicFrameType() {
         return Type.RETURN_ADDRESS.getBasicFrameType();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isConstant() {
         return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof ReturnAddress)) {
@@ -97,7 +115,9 @@ public final class ReturnAddress implements TypeBearer {
         return subroutineAddress == ((ReturnAddress) other).subroutineAddress;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return subroutineAddress;

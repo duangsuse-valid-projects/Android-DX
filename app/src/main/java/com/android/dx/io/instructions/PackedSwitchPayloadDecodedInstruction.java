@@ -22,7 +22,9 @@ package com.android.dx.io.instructions;
  */
 public final class PackedSwitchPayloadDecodedInstruction
         extends DecodedInstruction {
-    /** first key value */
+    /**
+     * first key value
+     */
     private final int firstKey;
 
     /**
@@ -35,14 +37,16 @@ public final class PackedSwitchPayloadDecodedInstruction
      * Constructs an instance.
      */
     public PackedSwitchPayloadDecodedInstruction(InstructionCodec format,
-            int opcode, int firstKey, int[] targets) {
+                                                 int opcode, int firstKey, int[] targets) {
         super(format, opcode, 0, null, 0, 0L);
 
         this.firstKey = firstKey;
         this.targets = targets;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getRegisterCount() {
         return 0;
@@ -56,7 +60,9 @@ public final class PackedSwitchPayloadDecodedInstruction
         return targets;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DecodedInstruction withIndex(int newIndex) {
         throw new UnsupportedOperationException("no index in instruction");

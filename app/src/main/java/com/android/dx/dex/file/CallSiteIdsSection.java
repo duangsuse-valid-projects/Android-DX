@@ -18,6 +18,7 @@ package com.android.dx.dex.file;
 import com.android.dx.rop.cst.Constant;
 import com.android.dx.rop.cst.CstCallSite;
 import com.android.dx.rop.cst.CstCallSiteRef;
+
 import java.util.Collection;
 import java.util.TreeMap;
 
@@ -26,10 +27,14 @@ import java.util.TreeMap;
  */
 public final class CallSiteIdsSection extends UniformItemSection {
 
-    /** A map from call site references to their DEX file identifier. */
+    /**
+     * A map from call site references to their DEX file identifier.
+     */
     private final TreeMap<CstCallSiteRef, CallSiteIdItem> callSiteIds = new TreeMap<>();
 
-    /** A map from call site instances to their DEX file item. */
+    /**
+     * A map from call site instances to their DEX file item.
+     */
     private final TreeMap<CstCallSite, CallSiteItem> callSites = new TreeMap<>();
 
     /**
@@ -41,7 +46,9 @@ public final class CallSiteIdsSection extends UniformItemSection {
         super("call_site_ids", dexFile, 4);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IndexedItem get(Constant cst) {
         if (cst == null) {
@@ -56,7 +63,9 @@ public final class CallSiteIdsSection extends UniformItemSection {
         return result;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void orderItems() {
         int index = 0;
@@ -65,7 +74,9 @@ public final class CallSiteIdsSection extends UniformItemSection {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<? extends Item> items() {
         return callSiteIds.values();
@@ -73,7 +84,7 @@ public final class CallSiteIdsSection extends UniformItemSection {
 
     /**
      * Interns a call site into this instance.
-     *
+     * <p>
      * This method is synchronized as it is called during class file translation which runs
      * concurrently on a per class basis.
      *
@@ -95,11 +106,11 @@ public final class CallSiteIdsSection extends UniformItemSection {
 
     /**
      * Adds an association between call site constant and its DEX file representation.
-     *
+     * <p>
      * This method is not synchronized as it is called during DEX file writing which happens
      * concurrently on a per DEX file basis and this information per DEX file.
      *
-     * @param callSite {@code non-null;} a constant call site
+     * @param callSite     {@code non-null;} a constant call site
      * @param callSiteItem {@code non-null;} a call site item as represented in a DEX file
      */
     void addCallSiteItem(CstCallSite callSite, CallSiteItem callSiteItem) {
@@ -114,7 +125,7 @@ public final class CallSiteIdsSection extends UniformItemSection {
 
     /**
      * Gets the DEX file representation of a call site associated with a call site constant.
-     *
+     * <p>
      * This method is not synchronized as it is called during DEX file writing which happens
      * concurrently on a per DEX file basis and this information per DEX file.
      *

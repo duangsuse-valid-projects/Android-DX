@@ -37,33 +37,43 @@ import com.android.dx.rop.type.Prototype;
  * stuff extracted from the method's {@code Code} attribute.
  */
 public final class ConcreteMethod implements Method {
-    /** {@code non-null;} method being wrapped */
+    /**
+     * {@code non-null;} method being wrapped
+     */
     private final Method method;
 
-    /** {@code non-null;} the {@code ClassFile} the method belongs to. */
+    /**
+     * {@code non-null;} the {@code ClassFile} the method belongs to.
+     */
     private final ClassFile classFile;
 
-    /** {@code non-null;} the code attribute */
+    /**
+     * {@code non-null;} the code attribute
+     */
     private final AttCode attCode;
 
-    /** {@code non-null;} line number list */
+    /**
+     * {@code non-null;} line number list
+     */
     private final LineNumberList lineNumbers;
 
-    /** {@code non-null;} local variable list */
+    /**
+     * {@code non-null;} local variable list
+     */
     private final LocalVariableList localVariables;
 
     /**
      * Constructs an instance.
      *
-     * @param method {@code non-null;} the method to be based on
-     * @param classFile {@code non-null;} the class file that contains this method
-     * @param keepLines whether to keep the line number information
-     * (if any)
+     * @param method     {@code non-null;} the method to be based on
+     * @param classFile  {@code non-null;} the class file that contains this method
+     * @param keepLines  whether to keep the line number information
+     *                   (if any)
      * @param keepLocals whether to keep the local variable
-     * information (if any)
+     *                   information (if any)
      */
     public ConcreteMethod(Method method, ClassFile classFile,
-            boolean keepLines, boolean keepLocals) {
+                          boolean keepLines, boolean keepLocals) {
         this.method = method;
         this.classFile = classFile;
 
@@ -82,7 +92,7 @@ public final class ConcreteMethod implements Method {
         LineNumberList lnl = LineNumberList.EMPTY;
         if (keepLines) {
             for (AttLineNumberTable lnt = (AttLineNumberTable)
-                     codeAttribs.findFirst(AttLineNumberTable.ATTRIBUTE_NAME);
+                    codeAttribs.findFirst(AttLineNumberTable.ATTRIBUTE_NAME);
                  lnt != null;
                  lnt = (AttLineNumberTable) codeAttribs.findNext(lnt)) {
                 lnl = LineNumberList.concat(lnl, lnt.getLineNumbers());
@@ -99,8 +109,8 @@ public final class ConcreteMethod implements Method {
              * single LocalVariableList.
              */
             for (AttLocalVariableTable lvt = (AttLocalVariableTable)
-                     codeAttribs.findFirst(
-                             AttLocalVariableTable.ATTRIBUTE_NAME);
+                    codeAttribs.findFirst(
+                            AttLocalVariableTable.ATTRIBUTE_NAME);
                  lvt != null;
                  lvt = (AttLocalVariableTable) codeAttribs.findNext(lvt)) {
 
@@ -109,8 +119,8 @@ public final class ConcreteMethod implements Method {
 
             LocalVariableList typeList = LocalVariableList.EMPTY;
             for (AttLocalVariableTypeTable lvtt = (AttLocalVariableTypeTable)
-                     codeAttribs.findFirst(
-                             AttLocalVariableTypeTable.ATTRIBUTE_NAME);
+                    codeAttribs.findFirst(
+                            AttLocalVariableTypeTable.ATTRIBUTE_NAME);
                  lvtt != null;
                  lvtt = (AttLocalVariableTypeTable) codeAttribs.findNext(lvtt)) {
                 typeList = LocalVariableList.concat(typeList, lvtt.getLocalVariables());
@@ -127,6 +137,7 @@ public final class ConcreteMethod implements Method {
 
     /**
      * Gets the source file associated with the method if known.
+     *
      * @return {null-ok;} the source file defining the method if known, null otherwise.
      */
     public CstString getSourceFile() {
@@ -135,58 +146,74 @@ public final class ConcreteMethod implements Method {
 
     /**
      * Tests whether the method is being defined on an interface.
+     *
      * @return true if the method is being defined on an interface.
      */
     public final boolean isDefaultOrStaticInterfaceMethod() {
         return (classFile.getAccessFlags() & AccessFlags.ACC_INTERFACE) != 0
-            && !getNat().isClassInit();
+                && !getNat().isClassInit();
     }
 
     /**
      * Tests whether the method is being defined is declared as static.
+     *
      * @return true if the method is being defined is declared as static.
      */
     public final boolean isStaticMethod() {
         return (getAccessFlags() & AccessFlags.ACC_STATIC) != 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CstNat getNat() {
         return method.getNat();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CstString getName() {
         return method.getName();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CstString getDescriptor() {
         return method.getDescriptor();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getAccessFlags() {
         return method.getAccessFlags();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AttributeList getAttributes() {
         return method.getAttributes();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CstType getDefiningClass() {
         return method.getDefiningClass();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Prototype getEffectiveDescriptor() {
         return method.getEffectiveDescriptor();
@@ -255,6 +282,6 @@ public final class ConcreteMethod implements Method {
      */
     public SourcePosition makeSourcePosistion(int offset) {
         return new SourcePosition(getSourceFile(), offset,
-                                  lineNumbers.pcToLine(offset));
+                lineNumbers.pcToLine(offset));
     }
 }

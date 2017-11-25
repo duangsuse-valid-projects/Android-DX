@@ -32,7 +32,9 @@ public final class StdFieldList extends FixedSizeList implements FieldList {
         super(size);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Field get(int n) {
         return (Field) get0(n);
@@ -41,7 +43,7 @@ public final class StdFieldList extends FixedSizeList implements FieldList {
     /**
      * Sets the field at the given index.
      *
-     * @param n {@code >= 0, < size();} which field
+     * @param n     {@code >= 0, < size();} which field
      * @param field {@code null-ok;} the field object
      */
     public void set(int n, Field field) {

@@ -25,10 +25,14 @@ import com.android.dx.util.Hex;
  */
 public final class CallSiteIdItem extends IndexedItem implements Comparable {
 
-    /** The item size when placed in a DEX file. */
+    /**
+     * The item size when placed in a DEX file.
+     */
     private static final int ITEM_SIZE = 4;
 
-    /** {@code non-null;} The call site represented by this identifier. */
+    /**
+     * {@code non-null;} The call site represented by this identifier.
+     */
     final CstCallSiteRef invokeDynamicRef;
 
     CallSiteItem data;
@@ -43,19 +47,25 @@ public final class CallSiteIdItem extends IndexedItem implements Comparable {
         this.data = null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ItemType itemType() {
         return ItemType.TYPE_CALL_SITE_ID_ITEM;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int writeSize() {
         return ITEM_SIZE;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addContents(DexFile file) {
         CstCallSite callSite = invokeDynamicRef.getCallSite();
@@ -70,7 +80,9 @@ public final class CallSiteIdItem extends IndexedItem implements Comparable {
         this.data = callSiteItem;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeTo(DexFile file, AnnotatedOutput out) {
         int offset = data.getAbsoluteOffset();
@@ -81,7 +93,9 @@ public final class CallSiteIdItem extends IndexedItem implements Comparable {
         out.writeInt(offset);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int compareTo(Object o) {
         CallSiteIdItem other = (CallSiteIdItem) o;

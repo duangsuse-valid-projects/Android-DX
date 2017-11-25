@@ -17,6 +17,7 @@
 package com.android.dx.cf.direct;
 
 import com.android.dex.util.FileUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -35,61 +36,6 @@ import java.util.zip.ZipFile;
  */
 public class ClassPathOpener {
 
-    /** {@code non-null;} pathname to start with */
-    private final String pathname;
-    /** {@code non-null;} callback interface */
-    private final Consumer consumer;
-    /**
-     * If true, sort such that classes appear before their inner
-     * classes and "package-info" occurs before all other classes in that
-     * package.
-     */
-    private final boolean sort;
-    private FileNameFilter filter;
-
-    /**
-     * Callback interface for {@code ClassOpener}.
-     */
-    public interface Consumer {
-
-        /**
-         * Provides the file name and byte array for a class path element.
-         *
-         * @param name {@code non-null;} filename of element. May not be a valid
-         * filesystem path.
-         *
-         * @param lastModified milliseconds since 1970-Jan-1 00:00:00 GMT
-         * @param bytes {@code non-null;} file data
-         * @return true on success. Result is or'd with all other results
-         * from {@code processFileBytes} and returned to the caller
-         * of {@code process()}.
-         */
-        boolean processFileBytes(String name, long lastModified, byte[] bytes);
-
-        /**
-         * Informs consumer that an exception occurred while processing
-         * this path element. Processing will continue if possible.
-         *
-         * @param ex {@code non-null;} exception
-         */
-        void onException(Exception ex);
-
-        /**
-         * Informs consumer that processing of an archive file has begun.
-         *
-         * @param file {@code non-null;} archive file being processed
-         */
-        void onProcessArchiveStart(File file);
-    }
-
-    /**
-     * Filter interface for {@code ClassOpener}.
-     */
-    public interface FileNameFilter {
-
-        boolean accept(String path);
-    }
-
     /**
      * An accept all filter.
      */
@@ -100,14 +46,29 @@ public class ClassPathOpener {
             return true;
         }
     };
+    /**
+     * {@code non-null;} pathname to start with
+     */
+    private final String pathname;
+    /**
+     * {@code non-null;} callback interface
+     */
+    private final Consumer consumer;
+    /**
+     * If true, sort such that classes appear before their inner
+     * classes and "package-info" occurs before all other classes in that
+     * package.
+     */
+    private final boolean sort;
+    private FileNameFilter filter;
 
     /**
      * Constructs an instance.
      *
      * @param pathname {@code non-null;} path element to process
-     * @param sort if true, sort such that classes appear before their inner
-     * classes and "package-info" occurs before all other classes in that
-     * package.
+     * @param sort     if true, sort such that classes appear before their inner
+     *                 classes and "package-info" occurs before all other classes in that
+     *                 package.
      * @param consumer {@code non-null;} callback interface
      */
     public ClassPathOpener(String pathname, boolean sort, Consumer consumer) {
@@ -118,17 +79,40 @@ public class ClassPathOpener {
      * Constructs an instance.
      *
      * @param pathname {@code non-null;} path element to process
-     * @param sort if true, sort such that classes appear before their inner
-     * classes and "package-info" occurs before all other classes in that
-     * package.
+     * @param sort     if true, sort such that classes appear before their inner
+     *                 classes and "package-info" occurs before all other classes in that
+     *                 package.
      * @param consumer {@code non-null;} callback interface
      */
     public ClassPathOpener(String pathname, boolean sort, FileNameFilter filter,
-            Consumer consumer) {
+                           Consumer consumer) {
         this.pathname = pathname;
         this.sort = sort;
         this.consumer = consumer;
         this.filter = filter;
+    }
+
+    /**
+     * Sorts java class names such that outer classes preceed their inner
+     * classes and "package-info" preceeds all other classes in its package.
+     *
+     * @param a {@code non-null;} first class name
+     * @param b {@code non-null;} second class name
+     * @return {@code compareTo()}-style result
+     */
+    private static int compareClassNames(String a, String b) {
+        // Ensure inner classes sort second
+        a = a.replace('$', '0');
+        b = b.replace('$', '0');
+
+        /*
+         * Assuming "package-info" only occurs at the end, ensures package-info
+         * sorts first.
+         */
+        a = a.replace("package-info", "");
+        b = b.replace("package-info", "");
+
+        return a.compareTo(b);
     }
 
     /**
@@ -146,9 +130,9 @@ public class ClassPathOpener {
     /**
      * Processes one file.
      *
-     * @param file {@code non-null;} the file to process
+     * @param file     {@code non-null;} the file to process
      * @param topLevel whether this is a top-level file (that is,
-     * specified directly on the commandline)
+     *                 specified directly on the commandline)
      * @return whether any processing actually happened
      */
     private boolean processOne(File file, boolean topLevel) {
@@ -177,34 +161,11 @@ public class ClassPathOpener {
     }
 
     /**
-     * Sorts java class names such that outer classes preceed their inner
-     * classes and "package-info" preceeds all other classes in its package.
-     *
-     * @param a {@code non-null;} first class name
-     * @param b {@code non-null;} second class name
-     * @return {@code compareTo()}-style result
-     */
-    private static int compareClassNames(String a, String b) {
-        // Ensure inner classes sort second
-        a = a.replace('$','0');
-        b = b.replace('$','0');
-
-        /*
-         * Assuming "package-info" only occurs at the end, ensures package-info
-         * sorts first.
-         */
-        a = a.replace("package-info", "");
-        b = b.replace("package-info", "");
-
-        return a.compareTo(b);
-    }
-
-    /**
      * Processes a directory recursively.
      *
-     * @param dir {@code non-null;} file representing the directory
+     * @param dir      {@code non-null;} file representing the directory
      * @param topLevel whether this is a top-level directory (that is,
-     * specified directly on the commandline)
+     *                 specified directly on the commandline)
      * @return whether any processing actually happened
      */
     private boolean processDirectory(File dir, boolean topLevel) {
@@ -248,10 +209,10 @@ public class ClassPathOpener {
 
         if (sort) {
             Collections.sort(entriesList, new Comparator<ZipEntry>() {
-               @Override
-               public int compare (ZipEntry a, ZipEntry b) {
-                   return compareClassNames(a.getName(), b.getName());
-               }
+                @Override
+                public int compare(ZipEntry a, ZipEntry b) {
+                    return compareClassNames(a.getName(), b.getName());
+                }
             });
         }
 
@@ -288,5 +249,47 @@ public class ClassPathOpener {
 
         zip.close();
         return any;
+    }
+
+    /**
+     * Callback interface for {@code ClassOpener}.
+     */
+    public interface Consumer {
+
+        /**
+         * Provides the file name and byte array for a class path element.
+         *
+         * @param name         {@code non-null;} filename of element. May not be a valid
+         *                     filesystem path.
+         * @param lastModified milliseconds since 1970-Jan-1 00:00:00 GMT
+         * @param bytes        {@code non-null;} file data
+         * @return true on success. Result is or'd with all other results
+         * from {@code processFileBytes} and returned to the caller
+         * of {@code process()}.
+         */
+        boolean processFileBytes(String name, long lastModified, byte[] bytes);
+
+        /**
+         * Informs consumer that an exception occurred while processing
+         * this path element. Processing will continue if possible.
+         *
+         * @param ex {@code non-null;} exception
+         */
+        void onException(Exception ex);
+
+        /**
+         * Informs consumer that processing of an archive file has begun.
+         *
+         * @param file {@code non-null;} archive file being processed
+         */
+        void onProcessArchiveStart(File file);
+    }
+
+    /**
+     * Filter interface for {@code ClassOpener}.
+     */
+    public interface FileNameFilter {
+
+        boolean accept(String path);
     }
 }

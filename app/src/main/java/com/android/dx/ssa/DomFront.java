@@ -17,6 +17,7 @@
 package com.android.dx.ssa;
 
 import com.android.dx.util.IntSet;
+
 import java.util.ArrayList;
 import java.util.BitSet;
 
@@ -26,29 +27,19 @@ import java.util.BitSet;
  * Harvey, and Kennedy; transliterated to Java.
  */
 public class DomFront {
-    /** local debug flag */
+    /**
+     * local debug flag
+     */
     private static final boolean DEBUG = false;
 
-    /** {@code non-null;} method being processed */
+    /**
+     * {@code non-null;} method being processed
+     */
     private final SsaMethod meth;
 
     private final ArrayList<SsaBasicBlock> nodes;
 
     private final DomInfo[] domInfos;
-
-    /**
-     * Dominance-frontier information for a single basic block.
-     */
-    public static class DomInfo {
-        /**
-         * {@code null-ok;} the dominance frontier set indexed by
-         * block index
-         */
-        public IntSet dominanceFrontiers;
-
-        /** {@code >= 0 after run();} the index of the immediate dominator */
-        public int idom = -1;
-    }
 
     /**
      * Constructs instance. Call {@link DomFront#run} to process.
@@ -196,5 +187,21 @@ public class DomFront {
                 }
             }
         }
+    }
+
+    /**
+     * Dominance-frontier information for a single basic block.
+     */
+    public static class DomInfo {
+        /**
+         * {@code null-ok;} the dominance frontier set indexed by
+         * block index
+         */
+        public IntSet dominanceFrontiers;
+
+        /**
+         * {@code >= 0 after run();} the index of the immediate dominator
+         */
+        public int idom = -1;
     }
 }

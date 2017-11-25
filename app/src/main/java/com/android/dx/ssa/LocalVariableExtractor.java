@@ -19,6 +19,7 @@ package com.android.dx.ssa;
 import com.android.dx.rop.code.RegisterSpec;
 import com.android.dx.rop.code.RegisterSpecSet;
 import com.android.dx.util.IntList;
+
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -27,33 +28,30 @@ import java.util.List;
  * Code to figure out which local variables are active at which points in
  * a method. Stolen and retrofitted from
  * com.android.dx.rop.code.LocalVariableExtractor
- *
+ * <p>
  * TODO remove this. Allow Rop-form LocalVariableInfo to be passed in,
  * converted, and adapted through edge-splitting.
  */
 public class LocalVariableExtractor {
-    /** {@code non-null;} method being extracted from */
+    /**
+     * {@code non-null;} method being extracted from
+     */
     private final SsaMethod method;
 
-    /** {@code non-null;} block list for the method */
+    /**
+     * {@code non-null;} block list for the method
+     */
     private final ArrayList<SsaBasicBlock> blocks;
 
-    /** {@code non-null;} result in-progress */
+    /**
+     * {@code non-null;} result in-progress
+     */
     private final LocalVariableInfo resultInfo;
 
-    /** {@code non-null;} work set indicating blocks needing to be processed */
-    private final BitSet workSet;
-
     /**
-     * Extracts out all the local variable information from the given method.
-     *
-     * @param method {@code non-null;} the method to extract from
-     * @return {@code non-null;} the extracted information
+     * {@code non-null;} work set indicating blocks needing to be processed
      */
-    public static LocalVariableInfo extract(SsaMethod method) {
-        LocalVariableExtractor lve = new LocalVariableExtractor(method);
-        return lve.doit();
-    }
+    private final BitSet workSet;
 
     /**
      * Constructs an instance. This method is private. Use {@link #extract}.
@@ -74,6 +72,17 @@ public class LocalVariableExtractor {
     }
 
     /**
+     * Extracts out all the local variable information from the given method.
+     *
+     * @param method {@code non-null;} the method to extract from
+     * @return {@code non-null;} the extracted information
+     */
+    public static LocalVariableInfo extract(SsaMethod method) {
+        LocalVariableExtractor lve = new LocalVariableExtractor(method);
+        return lve.doit();
+    }
+
+    /**
      * Does the extraction.
      *
      * @return {@code non-null;} the extracted information
@@ -81,7 +90,7 @@ public class LocalVariableExtractor {
     private LocalVariableInfo doit() {
 
         //FIXME why is this needed here?
-        if (method.getRegCount() > 0 ) {
+        if (method.getRegCount() > 0) {
             for (int bi = method.getEntryBlockIndex();
                  bi >= 0;
                  bi = workSet.nextSetBit(0)) {
@@ -120,7 +129,7 @@ public class LocalVariableExtractor {
          */
         SsaInsn lastInsn = insns.get(insnSz - 1);
         boolean hasExceptionHandlers
-                = lastInsn.getOriginalRopInsn().getCatches().size() !=0 ;
+                = lastInsn.getOriginalRopInsn().getCatches().size() != 0;
         boolean canThrowDuringLastInsn = hasExceptionHandlers
                 && (lastInsn.getResult() != null);
         int freezeSecondaryStateAt = insnSz - 1;
@@ -197,7 +206,7 @@ public class LocalVariableExtractor {
         for (int i = 0; i < succSz; i++) {
             int succ = successors.get(i);
             RegisterSpecSet state = (succ == primarySuccessor) ?
-                primaryState : secondaryState;
+                    primaryState : secondaryState;
 
             if (resultInfo.mergeStarts(succ, state)) {
                 workSet.set(succ);

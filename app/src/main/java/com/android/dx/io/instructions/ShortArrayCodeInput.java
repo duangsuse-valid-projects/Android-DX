@@ -23,7 +23,9 @@ import java.io.EOFException;
  */
 public final class ShortArrayCodeInput extends BaseCodeCursor
         implements CodeInput {
-    /** source array to read from */
+    /**
+     * source array to read from
+     */
     private final short[] array;
 
     /**
@@ -37,13 +39,17 @@ public final class ShortArrayCodeInput extends BaseCodeCursor
         this.array = array;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean hasMore() {
         return cursor() < array.length;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int read() throws EOFException {
         try {
@@ -55,7 +61,9 @@ public final class ShortArrayCodeInput extends BaseCodeCursor
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int readInt() throws EOFException {
         int short0 = read();
@@ -64,7 +72,9 @@ public final class ShortArrayCodeInput extends BaseCodeCursor
         return short0 | (short1 << 16);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long readLong() throws EOFException {
         long short0 = read();

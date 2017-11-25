@@ -23,11 +23,24 @@ import com.android.dx.rop.type.Type;
  */
 public final class CstBoolean
         extends CstLiteral32 {
-    /** {@code non-null;} instance representing {@code false} */
+    /**
+     * {@code non-null;} instance representing {@code false}
+     */
     public static final CstBoolean VALUE_FALSE = new CstBoolean(false);
 
-    /** {@code non-null;} instance representing {@code true} */
+    /**
+     * {@code non-null;} instance representing {@code true}
+     */
     public static final CstBoolean VALUE_TRUE = new CstBoolean(true);
+
+    /**
+     * Constructs an instance. This constructor is private; use {@link #make}.
+     *
+     * @param value the {@code boolean} value
+     */
+    private CstBoolean(boolean value) {
+        super(value ? 1 : 0);
+    }
 
     /**
      * Makes an instance for the given value. This will return an
@@ -58,33 +71,32 @@ public final class CstBoolean
     }
 
     /**
-     * Constructs an instance. This constructor is private; use {@link #make}.
-     *
-     * @param value the {@code boolean} value
+     * {@inheritDoc}
      */
-    private CstBoolean(boolean value) {
-        super(value ? 1 : 0);
-    }
-
-    /** {@inheritDoc} */
     @Override
     public String toString() {
         return getValue() ? "boolean{true}" : "boolean{false}";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Type getType() {
         return Type.BOOLEAN;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "boolean";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toHuman() {
         return getValue() ? "true" : "false";

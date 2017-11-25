@@ -28,10 +28,14 @@ import com.android.dx.util.Hex;
  */
 public final class MethodHandleItem extends IndexedItem {
 
-    /** The item size when placed in a DEX file. */
+    /**
+     * The item size when placed in a DEX file.
+     */
     private final int ITEM_SIZE = 8;
 
-    /** {@code non-null;} The method handle represented by this item. */
+    /**
+     * {@code non-null;} The method handle represented by this item.
+     */
     private final CstMethodHandle methodHandle;
 
     /**
@@ -43,26 +47,34 @@ public final class MethodHandleItem extends IndexedItem {
         this.methodHandle = methodHandle;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ItemType itemType() {
         return ItemType.TYPE_METHOD_HANDLE_ITEM;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int writeSize() {
         return ITEM_SIZE;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addContents(DexFile file) {
         MethodHandlesSection methodHandles = file.getMethodHandles();
         methodHandles.intern(methodHandle);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeTo(DexFile file, AnnotatedOutput out) {
         int targetIndex = getTargetIndex(file);
@@ -72,7 +84,7 @@ public final class MethodHandleItem extends IndexedItem {
             String typeComment = " // " + CstMethodHandle.getMethodHandleTypeName(mhType);
             out.annotate(2, "type:     " + Hex.u2(mhType) + typeComment);
             out.annotate(2, "reserved: " + Hex.u2(0));
-            String targetComment = " // " +  methodHandle.getRef().toString();
+            String targetComment = " // " + methodHandle.getRef().toString();
             if (methodHandle.isAccessor()) {
                 out.annotate(2, "fieldId:  " + Hex.u2(targetIndex) + targetComment);
             } else {
@@ -93,7 +105,7 @@ public final class MethodHandleItem extends IndexedItem {
             return fieldIds.indexOf((CstFieldRef) ref);
         } else if (methodHandle.isInvocation()) {
             if (ref instanceof CstInterfaceMethodRef) {
-                ref = ((CstInterfaceMethodRef)ref).toMethodRef();
+                ref = ((CstInterfaceMethodRef) ref).toMethodRef();
             }
             MethodIdsSection methodIds = file.getMethodIds();
             return methodIds.indexOf((CstBaseMethodRef) ref);

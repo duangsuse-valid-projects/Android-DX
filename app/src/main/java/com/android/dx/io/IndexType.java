@@ -20,45 +20,73 @@ package com.android.dx.io;
  * The various types that an index in a Dalvik instruction might refer to.
  */
 public enum IndexType {
-    /** "Unknown." Used for undefined opcodes. */
+    /**
+     * "Unknown." Used for undefined opcodes.
+     */
     UNKNOWN,
 
-    /** no index used */
+    /**
+     * no index used
+     */
     NONE,
 
-    /** "It depends." Used for {@code throw-verification-error}. */
+    /**
+     * "It depends." Used for {@code throw-verification-error}.
+     */
     VARIES,
 
-    /** type reference index */
+    /**
+     * type reference index
+     */
     TYPE_REF,
 
-    /** string reference index */
+    /**
+     * string reference index
+     */
     STRING_REF,
 
-    /** method reference index */
+    /**
+     * method reference index
+     */
     METHOD_REF,
 
-    /** field reference index */
+    /**
+     * field reference index
+     */
     FIELD_REF,
 
-    /** method index and a proto index */
+    /**
+     * method index and a proto index
+     */
     METHOD_AND_PROTO_REF,
 
-    /** call site reference index */
+    /**
+     * call site reference index
+     */
     CALL_SITE_REF,
 
-    /** inline method index (for inline linked method invocations) */
+    /**
+     * inline method index (for inline linked method invocations)
+     */
     INLINE_METHOD,
 
-    /** direct vtable offset (for static linked method invocations) */
+    /**
+     * direct vtable offset (for static linked method invocations)
+     */
     VTABLE_OFFSET,
 
-    /** direct field offset (for static linked field accesses) */
+    /**
+     * direct field offset (for static linked field accesses)
+     */
     FIELD_OFFSET,
 
-    /** method handle reference index (for loading constant method handles) */
+    /**
+     * method handle reference index (for loading constant method handles)
+     */
     METHOD_HANDLE_REF,
 
-    /** proto reference index (for loading constant proto ref) */
+    /**
+     * proto reference index (for loading constant proto ref)
+     */
     PROTO_REF;
 }

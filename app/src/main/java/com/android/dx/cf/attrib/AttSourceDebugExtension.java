@@ -22,10 +22,14 @@ import com.android.dx.rop.cst.CstString;
  * Attribute class for standard {@code SourceDebugExtension} attributes.
  */
 public final class AttSourceDebugExtension extends BaseAttribute {
-    /** {@code non-null;} attribute name for attributes of this type */
+    /**
+     * {@code non-null;} attribute name for attributes of this type
+     */
     public static final String ATTRIBUTE_NAME = "SourceDebugExtension";
 
-    /** {@code non-null;} Contents of SMAP */
+    /**
+     * {@code non-null;} Contents of SMAP
+     */
     private final CstString smapString;
 
     /**
@@ -43,7 +47,9 @@ public final class AttSourceDebugExtension extends BaseAttribute {
         this.smapString = smapString;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int byteLength() {
         // Add 6 for the standard attribute header: the attribute name

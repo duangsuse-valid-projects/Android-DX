@@ -16,20 +16,6 @@
 
 package com.android.dx.cf.cst;
 
-import static com.android.dx.cf.cst.ConstantTags.CONSTANT_Class;
-import static com.android.dx.cf.cst.ConstantTags.CONSTANT_Double;
-import static com.android.dx.cf.cst.ConstantTags.CONSTANT_Fieldref;
-import static com.android.dx.cf.cst.ConstantTags.CONSTANT_Float;
-import static com.android.dx.cf.cst.ConstantTags.CONSTANT_Integer;
-import static com.android.dx.cf.cst.ConstantTags.CONSTANT_InterfaceMethodref;
-import static com.android.dx.cf.cst.ConstantTags.CONSTANT_InvokeDynamic;
-import static com.android.dx.cf.cst.ConstantTags.CONSTANT_Long;
-import static com.android.dx.cf.cst.ConstantTags.CONSTANT_MethodHandle;
-import static com.android.dx.cf.cst.ConstantTags.CONSTANT_MethodType;
-import static com.android.dx.cf.cst.ConstantTags.CONSTANT_Methodref;
-import static com.android.dx.cf.cst.ConstantTags.CONSTANT_NameAndType;
-import static com.android.dx.cf.cst.ConstantTags.CONSTANT_String;
-import static com.android.dx.cf.cst.ConstantTags.CONSTANT_Utf8;
 import com.android.dx.cf.iface.ParseException;
 import com.android.dx.cf.iface.ParseObserver;
 import com.android.dx.rop.cst.Constant;
@@ -50,19 +36,41 @@ import com.android.dx.rop.cst.StdConstantPool;
 import com.android.dx.rop.type.Type;
 import com.android.dx.util.ByteArray;
 import com.android.dx.util.Hex;
+
 import java.util.BitSet;
+
+import static com.android.dx.cf.cst.ConstantTags.CONSTANT_Class;
+import static com.android.dx.cf.cst.ConstantTags.CONSTANT_Double;
+import static com.android.dx.cf.cst.ConstantTags.CONSTANT_Fieldref;
+import static com.android.dx.cf.cst.ConstantTags.CONSTANT_Float;
+import static com.android.dx.cf.cst.ConstantTags.CONSTANT_Integer;
+import static com.android.dx.cf.cst.ConstantTags.CONSTANT_InterfaceMethodref;
+import static com.android.dx.cf.cst.ConstantTags.CONSTANT_InvokeDynamic;
+import static com.android.dx.cf.cst.ConstantTags.CONSTANT_Long;
+import static com.android.dx.cf.cst.ConstantTags.CONSTANT_MethodHandle;
+import static com.android.dx.cf.cst.ConstantTags.CONSTANT_MethodType;
+import static com.android.dx.cf.cst.ConstantTags.CONSTANT_Methodref;
+import static com.android.dx.cf.cst.ConstantTags.CONSTANT_NameAndType;
+import static com.android.dx.cf.cst.ConstantTags.CONSTANT_String;
+import static com.android.dx.cf.cst.ConstantTags.CONSTANT_Utf8;
 
 /**
  * Parser for a constant pool embedded in a class file.
  */
 public final class ConstantPoolParser {
-    /** {@code non-null;} the bytes of the constant pool */
+    /**
+     * {@code non-null;} the bytes of the constant pool
+     */
     private final ByteArray bytes;
 
-    /** {@code non-null;} actual parsed constant pool contents */
+    /**
+     * {@code non-null;} actual parsed constant pool contents
+     */
     private final StdConstantPool pool;
 
-    /** {@code non-null;} byte offsets to each cst */
+    /**
+     * {@code non-null;} byte offsets to each cst
+     */
     private final int[] offsets;
 
     /**
@@ -72,7 +80,9 @@ public final class ConstantPoolParser {
      */
     private int endOffset;
 
-    /** {@code null-ok;} parse observer, if any */
+    /**
+     * {@code null-ok;} parse observer, if any
+     */
     private ParseObserver observer;
 
     /**
@@ -87,6 +97,30 @@ public final class ConstantPoolParser {
         this.pool = new StdConstantPool(size);
         this.offsets = new int[size];
         this.endOffset = -1;
+    }
+
+    private static int getMethodHandleTypeForKind(int kind) {
+        switch (kind) {
+            case MethodHandleKind.REF_getField:
+                return CstMethodHandle.METHOD_HANDLE_TYPE_INSTANCE_GET;
+            case MethodHandleKind.REF_getStatic:
+                return CstMethodHandle.METHOD_HANDLE_TYPE_STATIC_GET;
+            case MethodHandleKind.REF_putField:
+                return CstMethodHandle.METHOD_HANDLE_TYPE_INSTANCE_PUT;
+            case MethodHandleKind.REF_putStatic:
+                return CstMethodHandle.METHOD_HANDLE_TYPE_STATIC_PUT;
+            case MethodHandleKind.REF_invokeVirtual:
+                return CstMethodHandle.METHOD_HANDLE_TYPE_INVOKE_INSTANCE;
+            case MethodHandleKind.REF_invokeStatic:
+                return CstMethodHandle.METHOD_HANDLE_TYPE_INVOKE_STATIC;
+            case MethodHandleKind.REF_invokeSpecial:
+                return CstMethodHandle.METHOD_HANDLE_TYPE_INVOKE_DIRECT;
+            case MethodHandleKind.REF_newInvokeSpecial:
+                return CstMethodHandle.METHOD_HANDLE_TYPE_INVOKE_CONSTRUCTOR;
+            case MethodHandleKind.REF_invokeInterface:
+                return CstMethodHandle.METHOD_HANDLE_TYPE_INVOKE_INTERFACE;
+        }
+        throw new IllegalArgumentException("invalid kind: " + kind);
     }
 
     /**
@@ -136,7 +170,7 @@ public final class ConstantPoolParser {
 
         if (observer != null) {
             observer.parsed(bytes, 8, 2,
-                            "constant_pool_count: " + Hex.u2(offsets.length));
+                    "constant_pool_count: " + Hex.u2(offsets.length));
             observer.parsed(bytes, 10, 0, "\nconstant_pool:");
             observer.changeIndent(1);
         }
@@ -354,10 +388,10 @@ public final class ConstantPoolParser {
                         case MethodHandleKind.REF_invokeSpecial:
                             ref = parse0(constantIndex, wasUtf8);
                             if (!(ref instanceof CstMethodRef
-                                || ref instanceof CstInterfaceMethodRef)) {
-                              throw new ParseException(
-                                  "Unsupported ref constant type for MethodHandle "
-                                  + ref.getClass());
+                                    || ref instanceof CstInterfaceMethodRef)) {
+                                throw new ParseException(
+                                        "Unsupported ref constant type for MethodHandle "
+                                                + ref.getClass());
                             }
                             break;
                         case MethodHandleKind.REF_invokeInterface:
@@ -390,12 +424,12 @@ public final class ConstantPoolParser {
             }
         } catch (ParseException ex) {
             ex.addContext("...while parsing cst " + Hex.u2(idx) +
-                          " at offset " + Hex.u4(at));
+                    " at offset " + Hex.u4(at));
             throw ex;
         } catch (RuntimeException ex) {
             ParseException pe = new ParseException(ex);
             pe.addContext("...while parsing cst " + Hex.u2(idx) +
-                          " at offset " + Hex.u4(at));
+                    " at offset " + Hex.u4(at));
             throw pe;
         }
 
@@ -422,29 +456,5 @@ public final class ConstantPoolParser {
             // Translate the exception
             throw new ParseException(ex);
         }
-    }
-
-    private static int getMethodHandleTypeForKind(int kind) {
-        switch (kind) {
-            case MethodHandleKind.REF_getField:
-                return CstMethodHandle.METHOD_HANDLE_TYPE_INSTANCE_GET;
-            case MethodHandleKind.REF_getStatic:
-                return CstMethodHandle.METHOD_HANDLE_TYPE_STATIC_GET;
-            case MethodHandleKind.REF_putField:
-                return CstMethodHandle.METHOD_HANDLE_TYPE_INSTANCE_PUT;
-            case MethodHandleKind.REF_putStatic:
-                return CstMethodHandle.METHOD_HANDLE_TYPE_STATIC_PUT;
-            case MethodHandleKind.REF_invokeVirtual:
-                return CstMethodHandle.METHOD_HANDLE_TYPE_INVOKE_INSTANCE;
-            case MethodHandleKind.REF_invokeStatic:
-                return CstMethodHandle.METHOD_HANDLE_TYPE_INVOKE_STATIC;
-            case MethodHandleKind.REF_invokeSpecial:
-                return CstMethodHandle.METHOD_HANDLE_TYPE_INVOKE_DIRECT;
-            case MethodHandleKind.REF_newInvokeSpecial:
-                return CstMethodHandle.METHOD_HANDLE_TYPE_INVOKE_CONSTRUCTOR;
-            case MethodHandleKind.REF_invokeInterface:
-                return CstMethodHandle.METHOD_HANDLE_TYPE_INVOKE_INTERFACE;
-        }
-        throw new IllegalArgumentException("invalid kind: " + kind);
     }
 }

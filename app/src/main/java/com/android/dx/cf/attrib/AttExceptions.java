@@ -23,17 +23,21 @@ import com.android.dx.util.MutabilityException;
  * Attribute class for standard {@code Exceptions} attributes.
  */
 public final class AttExceptions extends BaseAttribute {
-    /** {@code non-null;} attribute name for attributes of this type */
+    /**
+     * {@code non-null;} attribute name for attributes of this type
+     */
     public static final String ATTRIBUTE_NAME = "Exceptions";
 
-    /** {@code non-null;} list of exception classes */
+    /**
+     * {@code non-null;} list of exception classes
+     */
     private final TypeList exceptions;
 
     /**
      * Constructs an instance.
      *
      * @param exceptions {@code non-null;} list of classes, presumed but not
-     * verified to be subclasses of {@code Throwable}
+     *                   verified to be subclasses of {@code Throwable}
      */
     public AttExceptions(TypeList exceptions) {
         super(ATTRIBUTE_NAME);
@@ -50,7 +54,9 @@ public final class AttExceptions extends BaseAttribute {
         this.exceptions = exceptions;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int byteLength() {
         return 8 + exceptions.size() * 2;

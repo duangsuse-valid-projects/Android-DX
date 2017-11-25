@@ -20,6 +20,7 @@ import com.android.dx.rop.cst.Constant;
 import com.android.dx.rop.cst.CstBaseMethodRef;
 import com.android.dx.util.AnnotatedOutput;
 import com.android.dx.util.Hex;
+
 import java.util.Collection;
 import java.util.TreeMap;
 
@@ -44,13 +45,17 @@ public final class MethodIdsSection extends MemberIdsSection {
         methodIds = new TreeMap<CstBaseMethodRef, MethodIdItem>();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<? extends Item> items() {
         return methodIds.values();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IndexedItem get(Constant cst) {
         if (cst == null) {

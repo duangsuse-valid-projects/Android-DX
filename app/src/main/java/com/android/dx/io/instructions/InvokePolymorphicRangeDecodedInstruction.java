@@ -18,7 +18,9 @@ package com.android.dx.io.instructions;
 
 import com.android.dx.io.IndexType;
 
-/** A decoded invoke-polymorphic/range instruction. */
+/**
+ * A decoded invoke-polymorphic/range instruction.
+ */
 public class InvokePolymorphicRangeDecodedInstruction extends DecodedInstruction {
 
     private final int c;
@@ -35,7 +37,7 @@ public class InvokePolymorphicRangeDecodedInstruction extends DecodedInstruction
             int protoIndex) {
         super(format, opcode, methodIndex, indexType, 0, 0);
         if (protoIndex != (short) protoIndex) {
-          throw new IllegalArgumentException("protoIndex doesn't fit in a short: " + protoIndex);
+            throw new IllegalArgumentException("protoIndex doesn't fit in a short: " + protoIndex);
         }
         this.c = c;
         this.registerCount = registerCount;

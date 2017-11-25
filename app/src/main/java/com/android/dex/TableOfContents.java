@@ -50,9 +50,9 @@ public final class TableOfContents {
     public final Section encodedArrays = new Section(0x2005);
     public final Section annotationsDirectories = new Section(0x2006);
     public final Section[] sections = {
-        header, stringIds, typeIds, protoIds, fieldIds, methodIds, classDefs, mapList, callSiteIds,
-        methodHandles, typeLists, annotationSetRefLists, annotationSets, classDatas, codes,
-        stringDatas, debugInfos, annotations, encodedArrays, annotationsDirectories
+            header, stringIds, typeIds, protoIds, fieldIds, methodIds, classDefs, mapList, callSiteIds,
+            methodHandles, typeLists, annotationSetRefLists, annotationSets, classDatas, codes,
+            stringDatas, debugInfos, annotations, encodedArrays, annotationsDirectories
     };
 
     public int apiLevel;
@@ -80,9 +80,9 @@ public final class TableOfContents {
         if (!DexFormat.isSupportedDexMagic(magic)) {
             String msg =
                     String.format("Unexpected magic: [0x%02x, 0x%02x, 0x%02x, 0x%02x, "
-                                  + "0x%02x, 0x%02x, 0x%02x, 0x%02x]",
-                                  magic[0], magic[1], magic[2], magic[3],
-                                  magic[4], magic[5], magic[6], magic[7]);
+                                    + "0x%02x, 0x%02x, 0x%02x, 0x%02x]",
+                            magic[0], magic[1], magic[2], magic[3],
+                            magic[4], magic[5], magic[6], magic[7]);
             throw new DexException(msg);
         }
 

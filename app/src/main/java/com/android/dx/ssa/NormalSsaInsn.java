@@ -27,13 +27,15 @@ import com.android.dx.rop.code.Rop;
  * A "normal" (non-phi) instruction in SSA form. Always wraps a rop insn.
  */
 public final class NormalSsaInsn extends SsaInsn implements Cloneable {
-    /** {@code non-null;} rop insn that we're wrapping */
+    /**
+     * {@code non-null;} rop insn that we're wrapping
+     */
     private Insn insn;
 
     /**
      * Creates an instance.
      *
-     * @param insn Rop insn to wrap
+     * @param insn  Rop insn to wrap
      * @param block block that contains this insn
      */
     NormalSsaInsn(final Insn insn, final SsaBasicBlock block) {
@@ -41,7 +43,9 @@ public final class NormalSsaInsn extends SsaInsn implements Cloneable {
         this.insn = insn;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void mapSourceRegisters(RegisterMapper mapper) {
         RegisterSpecList oldSources = insn.getSources();
@@ -57,7 +61,7 @@ public final class NormalSsaInsn extends SsaInsn implements Cloneable {
      * Changes one of the insn's sources. New source should be of same type
      * and category.
      *
-     * @param index {@code >=0;} index of source to change
+     * @param index   {@code >=0;} index of source to change
      * @param newSpec spec for new source
      */
     public final void changeOneSource(int index, RegisterSpec newSpec) {
@@ -89,7 +93,7 @@ public final class NormalSsaInsn extends SsaInsn implements Cloneable {
      *
      * @param newSources non-null new sources list.
      */
-    public final void setNewSources (RegisterSpecList newSources) {
+    public final void setNewSources(RegisterSpecList newSources) {
         RegisterSpecList origSources = insn.getSources();
 
         if (origSources.size() != newSources.size()) {
@@ -99,7 +103,9 @@ public final class NormalSsaInsn extends SsaInsn implements Cloneable {
         insn = insn.withNewRegisters(getResult(), newSources);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public NormalSsaInsn clone() {
         return (NormalSsaInsn) super.clone();
@@ -115,13 +121,17 @@ public final class NormalSsaInsn extends SsaInsn implements Cloneable {
         return insn.getSources();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toHuman() {
         return toRopInsn().toHuman();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Insn toRopInsn() {
         return insn.withNewRegisters(getResult(), insn.getSources());
@@ -135,13 +145,17 @@ public final class NormalSsaInsn extends SsaInsn implements Cloneable {
         return insn.getOpcode();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Insn getOriginalRopInsn() {
         return insn;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RegisterSpec getLocalAssignment() {
         RegisterSpec assignment;
@@ -186,19 +200,25 @@ public final class NormalSsaInsn extends SsaInsn implements Cloneable {
         return insn.getOpcode().getOpcode() == RegOps.MOVE;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isMoveException() {
         return insn.getOpcode().getOpcode() == RegOps.MOVE_EXCEPTION;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean canThrow() {
         return insn.canThrow();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(Visitor v) {
         if (isNormalMoveInsn()) {
@@ -208,15 +228,17 @@ public final class NormalSsaInsn extends SsaInsn implements Cloneable {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public  boolean isPhiOrMove() {
+    public boolean isPhiOrMove() {
         return isNormalMoveInsn();
     }
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * TODO: Increase the scope of this.
      */
     @Override
@@ -228,7 +250,7 @@ public final class NormalSsaInsn extends SsaInsn implements Cloneable {
         }
 
         boolean hasLocalSideEffect
-            = Optimizer.getPreserveLocals() && getLocalAssignment() != null;
+                = Optimizer.getPreserveLocals() && getLocalAssignment() != null;
 
         switch (opcode.getOpcode()) {
             case RegOps.MOVE_RESULT:

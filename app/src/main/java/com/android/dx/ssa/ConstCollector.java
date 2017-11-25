@@ -31,6 +31,7 @@ import com.android.dx.rop.cst.CstString;
 import com.android.dx.rop.cst.TypedConstant;
 import com.android.dx.rop.type.StdTypeList;
 import com.android.dx.rop.type.TypeBearer;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -44,7 +45,9 @@ import java.util.Map;
  * insn size by about 3%.
  */
 public class ConstCollector {
-    /** Maximum constants to collect per method. Puts cap on reg use */
+    /**
+     * Maximum constants to collect per method. Puts cap on reg use
+     */
     private static final int MAX_COLLECTED_CONSTANTS = 5;
 
     /**
@@ -62,8 +65,19 @@ public class ConstCollector {
      */
     private static final boolean COLLECT_ONE_LOCAL = false;
 
-    /** method we're processing */
+    /**
+     * method we're processing
+     */
     private final SsaMethod ssaMeth;
+
+    /**
+     * Constructs an instance.
+     *
+     * @param ssaMethod {@code non-null;} method to process
+     */
+    private ConstCollector(SsaMethod ssaMethod) {
+        this.ssaMeth = ssaMethod;
+    }
 
     /**
      * Processes a method.
@@ -73,15 +87,6 @@ public class ConstCollector {
     public static void process(SsaMethod ssaMethod) {
         ConstCollector cc = new ConstCollector(ssaMethod);
         cc.run();
-    }
-
-    /**
-     * Constructs an instance.
-     *
-     * @param ssaMethod {@code non-null;} method to process
-     */
-    private ConstCollector(SsaMethod ssaMethod) {
-        this.ssaMeth = ssaMethod;
     }
 
     /**
@@ -99,7 +104,7 @@ public class ConstCollector {
 
         // Constant to new register containing the constant
         HashMap<TypedConstant, RegisterSpec> newRegs
-                = new HashMap<TypedConstant, RegisterSpec> (toCollect);
+                = new HashMap<TypedConstant, RegisterSpec>(toCollect);
 
         for (int i = 0; i < toCollect; i++) {
             TypedConstant cst = constantList.get(i);
@@ -133,10 +138,10 @@ public class ConstCollector {
                 SsaBasicBlock resultBlock
                         = constBlock.insertNewSuccessor(successorBlock);
                 PlainInsn insn
-                    = new PlainInsn(
-                            Rops.opMoveResultPseudo(result.getTypeBearer()),
-                            SourcePosition.NO_INFO,
-                            result, RegisterSpecList.EMPTY);
+                        = new PlainInsn(
+                        Rops.opMoveResultPseudo(result.getTypeBearer()),
+                        SourcePosition.NO_INFO,
+                        result, RegisterSpecList.EMPTY);
 
                 resultBlock.addInsnToHead(insn);
             }
@@ -185,7 +190,7 @@ public class ConstCollector {
                 int pred = insn.getBlock().getPredecessors().nextSetBit(0);
                 ArrayList<SsaInsn> predInsns;
                 predInsns = ssaMeth.getBlocks().get(pred).getInsns();
-                insn = predInsns.get(predInsns.size()-1);
+                insn = predInsns.get(predInsns.size() - 1);
             }
 
             if (insn.canThrow()) {
@@ -257,7 +262,7 @@ public class ConstCollector {
             }
 
             @Override
-            public boolean equals (Object obj) {
+            public boolean equals(Object obj) {
                 return obj == this;
             }
         });
@@ -273,11 +278,11 @@ public class ConstCollector {
      * be removed by the dead code eliminator
      *
      * @param origReg {@code non-null;} original register
-     * @param newReg {@code non-null;} new register that will replace
-     * {@code origReg}
+     * @param newReg  {@code non-null;} new register that will replace
+     *                {@code origReg}
      */
     private void fixLocalAssignment(RegisterSpec origReg,
-            RegisterSpec newReg) {
+                                    RegisterSpec newReg) {
         for (SsaInsn use : ssaMeth.getUseListForRegister(origReg.getReg())) {
             RegisterSpec localAssignment = use.getLocalAssignment();
             if (localAssignment == null) {
@@ -302,9 +307,9 @@ public class ConstCollector {
 
             SsaInsn newInsn
                     = SsaInsn.makeFromRop(
-                        new PlainInsn(Rops.opMarkLocal(newReg),
-                        SourcePosition.NO_INFO, null,
-                                RegisterSpecList.make(newReg)),
+                    new PlainInsn(Rops.opMarkLocal(newReg),
+                            SourcePosition.NO_INFO, null,
+                            RegisterSpecList.make(newReg)),
                     use.getBlock());
 
             ArrayList<SsaInsn> insns = use.getBlock().getInsns();
@@ -317,12 +322,12 @@ public class ConstCollector {
      * Updates all uses of various consts to use the values in the newly
      * assigned registers.
      *
-     * @param newRegs {@code non-null;} mapping between constant and new reg
+     * @param newRegs      {@code non-null;} mapping between constant and new reg
      * @param origRegCount {@code >=0;} original SSA reg count, not including
-     * newly added constant regs
+     *                     newly added constant regs
      */
     private void updateConstUses(HashMap<TypedConstant, RegisterSpec> newRegs,
-            int origRegCount) {
+                                 int origRegCount) {
 
         /*
          * set of constants associated with a local variable; used

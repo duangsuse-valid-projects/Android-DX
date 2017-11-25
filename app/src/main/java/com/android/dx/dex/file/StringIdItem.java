@@ -26,10 +26,14 @@ import com.android.dx.util.Hex;
  */
 public final class StringIdItem
         extends IndexedItem implements Comparable {
-    /** {@code non-null;} the string value */
+    /**
+     * {@code non-null;} the string value
+     */
     private final CstString value;
 
-    /** {@code null-ok;} associated string data object, if known */
+    /**
+     * {@code null-ok;} associated string data object, if known
+     */
     private StringDataItem data;
 
     /**
@@ -46,7 +50,9 @@ public final class StringIdItem
         this.data = null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof StringIdItem)) {
@@ -57,32 +63,42 @@ public final class StringIdItem
         return value.equals(otherString.value);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return value.hashCode();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int compareTo(Object other) {
         StringIdItem otherString = (StringIdItem) other;
         return value.compareTo(otherString.value);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ItemType itemType() {
         return ItemType.TYPE_STRING_ID_ITEM;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int writeSize() {
         return SizeOf.STRING_ID_ITEM;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addContents(DexFile file) {
         if (data == null) {
@@ -93,7 +109,9 @@ public final class StringIdItem
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeTo(DexFile file, AnnotatedOutput out) {
         int dataOff = data.getAbsoluteOffset();

@@ -22,7 +22,9 @@ import com.android.dx.util.FixedSizeList;
  * Constant type to represent a fixed array of other constants.
  */
 public class CstArray extends Constant {
-    /** {@code non-null;} the actual list of contents */
+    /**
+     * {@code non-null;} the actual list of contents
+     */
     private final List list;
 
     /**
@@ -40,47 +42,61 @@ public class CstArray extends Constant {
         this.list = list;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object other) {
-        if (! (other instanceof CstArray)) {
+        if (!(other instanceof CstArray)) {
             return false;
         }
 
         return list.equals(((CstArray) other).list);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return list.hashCode();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected int compareTo0(Constant other) {
         return list.compareTo(((CstArray) other).list);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return list.toString("array{", ", ", "}");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "array";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isCategory2() {
         return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toHuman() {
         return list.toHuman("{", ", ", "}");
@@ -110,7 +126,9 @@ public class CstArray extends Constant {
             super(size);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public int compareTo(List other) {
             int thisSize = size();

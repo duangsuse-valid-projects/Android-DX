@@ -21,7 +21,9 @@ package com.android.dx.io.instructions;
  */
 public final class ShortArrayCodeOutput extends BaseCodeCursor
         implements CodeOutput {
-    /** array to write to */
+    /**
+     * array to write to
+     */
     private final short[] array;
 
     /**
@@ -53,21 +55,27 @@ public final class ShortArrayCodeOutput extends BaseCodeCursor
         return result;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void write(short codeUnit) {
         array[cursor()] = codeUnit;
         advance(1);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void write(short u0, short u1) {
         write(u0);
         write(u1);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void write(short u0, short u1, short u2) {
         write(u0);
@@ -75,7 +83,9 @@ public final class ShortArrayCodeOutput extends BaseCodeCursor
         write(u2);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void write(short u0, short u1, short u2, short u3) {
         write(u0);
@@ -84,7 +94,9 @@ public final class ShortArrayCodeOutput extends BaseCodeCursor
         write(u3);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void write(short u0, short u1, short u2, short u3, short u4) {
         write(u0);
@@ -94,14 +106,18 @@ public final class ShortArrayCodeOutput extends BaseCodeCursor
         write(u4);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeInt(int value) {
         write((short) value);
         write((short) (value >> 16));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeLong(long value) {
         write((short) value);
@@ -110,7 +126,9 @@ public final class ShortArrayCodeOutput extends BaseCodeCursor
         write((short) (value >> 48));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void write(byte[] data) {
         int value = 0;
@@ -131,7 +149,9 @@ public final class ShortArrayCodeOutput extends BaseCodeCursor
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void write(short[] data) {
         for (short unit : data) {
@@ -139,7 +159,9 @@ public final class ShortArrayCodeOutput extends BaseCodeCursor
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void write(int[] data) {
         for (int i : data) {
@@ -147,7 +169,9 @@ public final class ShortArrayCodeOutput extends BaseCodeCursor
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void write(long[] data) {
         for (long l : data) {

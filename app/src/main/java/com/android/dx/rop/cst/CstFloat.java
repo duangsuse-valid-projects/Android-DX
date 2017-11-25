@@ -24,14 +24,29 @@ import com.android.dx.util.Hex;
  */
 public final class CstFloat
         extends CstLiteral32 {
-    /** {@code non-null;} instance representing {@code 0} */
+    /**
+     * {@code non-null;} instance representing {@code 0}
+     */
     public static final CstFloat VALUE_0 = make(Float.floatToIntBits(0.0f));
 
-    /** {@code non-null;} instance representing {@code 1} */
+    /**
+     * {@code non-null;} instance representing {@code 1}
+     */
     public static final CstFloat VALUE_1 = make(Float.floatToIntBits(1.0f));
 
-    /** {@code non-null;} instance representing {@code 2} */
+    /**
+     * {@code non-null;} instance representing {@code 2}
+     */
     public static final CstFloat VALUE_2 = make(Float.floatToIntBits(2.0f));
+
+    /**
+     * Constructs an instance. This constructor is private; use {@link #make}.
+     *
+     * @param bits the {@code float} value as {@code int} bits
+     */
+    private CstFloat(int bits) {
+        super(bits);
+    }
 
     /**
      * Makes an instance for the given value. This may (but does not
@@ -48,35 +63,34 @@ public final class CstFloat
     }
 
     /**
-     * Constructs an instance. This constructor is private; use {@link #make}.
-     *
-     * @param bits the {@code float} value as {@code int} bits
+     * {@inheritDoc}
      */
-    private CstFloat(int bits) {
-        super(bits);
-    }
-
-    /** {@inheritDoc} */
     @Override
     public String toString() {
         int bits = getIntBits();
         return "float{0x" + Hex.u4(bits) + " / " +
-            Float.intBitsToFloat(bits) + '}';
+                Float.intBitsToFloat(bits) + '}';
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Type getType() {
         return Type.FLOAT;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "float";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toHuman() {
         return Float.toString(Float.intBitsToFloat(getIntBits()));
