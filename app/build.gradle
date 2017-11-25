@@ -1,0 +1,43 @@
+apply plugin: 'com.android.application'
+
+android {
+    signingConfigs {
+        config {
+            keyAlias 'duangsuse'
+            keyPassword 'dse'
+            storeFile file('duang.keystore')
+            storePassword 'dse'
+        }
+    }
+    compileSdkVersion 27
+    defaultConfig {
+        applicationId "org.duangsue.dx"
+        //noinspection MinSdkTooLow
+        minSdkVersion 9
+        targetSdkVersion 27
+        versionCode 2
+        versionName "1.1"
+    }
+    buildTypes {
+        release {
+            postprocessing {
+                debuggable false
+                removeUnusedCode true
+                removeUnusedResources true
+                obfuscate false
+                optimizeCode true
+                zipAlignEnabled true
+            }
+            signingConfig signingConfigs.config
+        }
+    }
+    buildToolsVersion '27.0.1'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
